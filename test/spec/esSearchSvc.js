@@ -29,7 +29,7 @@ describe('Service: searchSvc: ElasticSearch', function() {
         return data.size === expectedParams.size;
       }
     }
-  };
+  }
 
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
@@ -907,7 +907,7 @@ describe('Service: searchSvc: ElasticSearch', function() {
           return (data.from === expectedPagerParams.from) && (data.size === expectedPagerParams.size);
         }
       }
-    };
+    }
 
     it('pages on page', function() {
       $httpBackend.expectPOST(mockEsUrl).respond(200, fullResponse);

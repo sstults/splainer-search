@@ -1,73 +1,42 @@
 {
   "name": "splainer-search",
-  "version": "2.35.1",
-  "main": "splainer-search.js",
-  "authors": [
-    "Doug Turnbull <dturnbull@opensourceconnections.com>",
-    "Youssef Chaker <ychaker@opensourceconnections.com>"
-  ],
-  "description": "Angular JS Solr and Elasticsearch and OpenSearch Diagnostic Search Services",
-  "homepage": "https://github.com/o19s/splainer-search",
-  "bugs": {
-    "url": "https://github.com/o19s/splainer-search/issues"
+  "version": "0.1.0",
+  "description": "A framework-agnostic search library for Solr, Elasticsearch, OpenSearch, and Vectara",
+  "type": "module",
+  "main": "api/index.js",
+  "exports": {
+    ".": {
+      "import": "./api/index.js",
+      "require": "./api/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup api/index.js --format esm,cjs --dts --sourcemap",
+    "test": "vitest run",
+    "dev:test": "vitest",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix"
   },
   "keywords": [
-    "splainer-search",
     "search",
     "solr",
     "elasticsearch",
-    "relevancy search"
+    "opensearch",
+    "vectara"
   ],
-  "license": "Apache-2.0",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests",
-    "coverage",
-    "factories",
-    "pages",
-    "services",
-    "values",
-    "Gruntfile.js",
-    "index.js",
-    "index.html",
-    "karma.conf.js",
-    "karma.debug.conf.js",
-    "module.js"
-  ],
-  "dependencies": {
-    "angular": "1.8.3",
-    "urijs": "^1.19.7"
-  },
+  "author": "sstults",
+  "license": "MIT",
   "devDependencies": {
-    "angular-mocks": "^1.8.3",
-    "grunt": "^1.5.3",
-    "grunt-contrib-concat": "^2.1.0",
-    "grunt-contrib-jshint": "^3.2.0",
-    "grunt-contrib-uglify": "^5.2.2",
-    "grunt-karma": "^4.0.2",
-    "jasmine-core": "^5.0.0",
-    "karma": "^6.4.0",
-    "karma-chrome-launcher": "^3.1.1",
-    "karma-jasmine": "^5.1.0",
-    "puppeteer": "^22.0.0"
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.1",
+    "vitest": "^1.4.0"
   },
-  "engines": {
-    "node": ">=16"
-  },
-  "scripts": {
-    "test": "grunt karma:unit",
-    "build": "grunt",
-    "build:dev": "grunt build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/o19s/splainer-search.git"
-  },
-  "directories": {
-    "test": "test"
-  },
-  "author": ""
+  "files": [
+    "api/",
+    "core/",
+    "adapters/",
+    "net/",
+    "util/"
+  ]
 }
