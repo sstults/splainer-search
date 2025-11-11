@@ -1,0 +1,1 @@
+When you run tests in Node frameworks, make sure that you don't run them in a mode that waits for file changes. This might be called "watch" mode. The problem is that it occupies the terminal and you are not able to proceed without outside intervention.

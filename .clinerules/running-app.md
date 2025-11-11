@@ -1,0 +1,1 @@
+Before you attempt to run the app, make sure another version of the app isn't running. This may be confusing because we have TWO versions of the app in this monorepo. The first version is the Angular app, the second is the React app we are building.

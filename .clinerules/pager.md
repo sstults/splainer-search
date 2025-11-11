@@ -1,0 +1,1 @@
+Whenever you use a command that has a "pager" like git, be sure to disable the pager so that the command does not wait for terminal input.
