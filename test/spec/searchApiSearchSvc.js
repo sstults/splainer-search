@@ -13,7 +13,7 @@ describe('Service: searchSvc: SearchApi', function () {
   var fieldSpecSvc = null;
   var mockSearchApiUrl = 'http://example.com:1234/api/search';
   var mockSearchApiParams = {
-    query: "#$query##"
+    query: '#$query##'
   };
   var expectedParams = angular.copy(mockSearchApiParams);
   var mockQueryText = 'rambo movie';
@@ -21,20 +21,20 @@ describe('Service: searchSvc: SearchApi', function () {
   expectedParams.query = encodeURIComponent(mockQueryText);
   
   var expectedPayload = {
-    "query": mockQueryText
-  }
+    'query': mockQueryText
+  };
   var mockSearchApiResults = [
     {
       id: 1,
-      title: "Rambo",
-      name:  "Rambo Collection"    
+      title: 'Rambo',
+      name:  'Rambo Collection'    
     },
     {
       id: 2,
-      title: "Rambo II",
-      name:  "Rambo Collection"
+      title: 'Rambo II',
+      name:  'Rambo Collection'
     }    
-  ]
+  ];
 
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
@@ -52,9 +52,9 @@ describe('Service: searchSvc: SearchApi', function () {
 
   it('access searchapi using GET', function() {
     var searcher = searchSvc.createSearcher(mockFieldSpec, mockSearchApiUrl,
-                                                mockSearchApiParams, mockQueryText, { apiMethod: 'GET' }, 'searchapi');
+      mockSearchApiParams, mockQueryText, { apiMethod: 'GET' }, 'searchapi');
     
-    $httpBackend.expectGET("http://example.com:1234/api/search?query=rambo movie").respond(200, mockSearchApiResults);
+    $httpBackend.expectGET('http://example.com:1234/api/search?query=rambo movie').respond(200, mockSearchApiResults);
     searcher.search();
     $httpBackend.flush();
     $httpBackend.verifyNoOutstandingExpectation();
@@ -62,9 +62,9 @@ describe('Service: searchSvc: SearchApi', function () {
   
   it('access searchapi using POST', function() {
     var searcher = searchSvc.createSearcher(mockFieldSpec, mockSearchApiUrl,
-                                                mockSearchApiParams, mockQueryText, { apiMethod: 'POST' }, 'searchapi');
+      mockSearchApiParams, mockQueryText, { apiMethod: 'POST' }, 'searchapi');
     
-    $httpBackend.expectPOST("http://example.com:1234/api/search", expectedPayload).respond(200, mockSearchApiResults);
+    $httpBackend.expectPOST('http://example.com:1234/api/search', expectedPayload).respond(200, mockSearchApiResults);
     searcher.search();
     $httpBackend.flush();
     $httpBackend.verifyNoOutstandingExpectation();
@@ -76,12 +76,12 @@ describe('Service: searchSvc: SearchApi', function () {
     options.numberOfResultsMapper = function(data){
       // could have been data.length
       return 99;
-    }
+    };
     
     var searcher = searchSvc.createSearcher(mockFieldSpec, mockSearchApiUrl,
-                                                mockSearchApiParams, mockQueryText, options, 'searchapi');
+      mockSearchApiParams, mockQueryText, options, 'searchapi');
     
-    $httpBackend.expectGET("http://example.com:1234/api/search?query=rambo movie").respond(200, mockSearchApiResults);
+    $httpBackend.expectGET('http://example.com:1234/api/search?query=rambo movie').respond(200, mockSearchApiResults);
 
     searcher.search();
     
@@ -101,32 +101,32 @@ describe('Service: searchSvc: SearchApi', function () {
           name: doc.name,
           title: doc.title,
         }
-        )
+        );
       }
-      return docs
-    }
+      return docs;
+    };
     
     
     var searcher = searchSvc.createSearcher(mockFieldSpec, mockSearchApiUrl,
-                                                mockSearchApiParams, mockQueryText, options, 'searchapi');
+      mockSearchApiParams, mockQueryText, options, 'searchapi');
     
-    $httpBackend.expectGET("http://example.com:1234/api/search?query=rambo movie").respond(200, mockSearchApiResults);
+    $httpBackend.expectGET('http://example.com:1234/api/search?query=rambo movie').respond(200, mockSearchApiResults);
 
     var called = 0;
 
     searcher.search()
-        .then(function () {
+      .then(function () {
 
-          var docs = searcher.docs;
-          expect(docs.length === 2);
+        var docs = searcher.docs;
+        expect(docs.length === 2);
 
-          expect(docs[0].title).toEqual("Rambo");
-          expect(docs[0].id).toEqual(1);
-          expect(docs[1].title).toEqual("Rambo II");
-          expect(docs[1].id).toEqual(2);                
+        expect(docs[0].title).toEqual('Rambo');
+        expect(docs[0].id).toEqual(1);
+        expect(docs[1].title).toEqual('Rambo II');
+        expect(docs[1].id).toEqual(2);                
           
-          called++;
-        });
+        called++;
+      });
     
     $httpBackend.flush();
     $httpBackend.verifyNoOutstandingExpectation();

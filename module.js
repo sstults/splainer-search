@@ -1,1 +1,2 @@
-angular.module('o19s.splainer-search', []);
+// Main module entry point
+export * from './api/index.js';

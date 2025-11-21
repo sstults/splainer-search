@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Fri Sep 02 2022 14:34:16 GMT-0400 (Eastern Daylight Time)
 
-process.env.CHROME_BIN = require('puppeteer').executablePath()
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function(config) {
   config.set({
@@ -17,9 +17,6 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/angular/angular.js',
-      'node_modules/angular-mocks/angular-mocks.js',
-      'node_modules/urijs/src/URI.min.js',
       'module.js',
       'services/**/*.js',
       'factories/**/*.js',
@@ -75,5 +72,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser instances should be started simultaneously
     concurrency: Infinity
-  })
-}
+  });
+};

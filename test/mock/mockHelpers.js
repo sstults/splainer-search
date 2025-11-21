@@ -34,8 +34,8 @@ window.urlHasBasicAuth = function() {
         return false; // Invalid URL
       }      
     }
-  }
-}
+  };
+};
 
 window.urlHasNoBasicAuth = function() {
   return {
@@ -53,8 +53,8 @@ window.urlHasNoBasicAuth = function() {
         return false; // Invalid URL
       }      
     }
-  }
-}
+  };
+};
 
 window.arrayContains = function(list, value) {
   var contains = false;
@@ -114,4 +114,4 @@ window.urlMissingParams = function(url, params) {
       return !found;
     }
   };
-}
+};

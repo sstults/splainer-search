@@ -51,15 +51,15 @@ describe('Service: normalDocsSvc', function () {
     var normalDoc = null;
     beforeEach(function() {
       solrDoc = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 'int_field': 1234,
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {
-                   return '';
-                 },
-                 explain: function() {return mockExplain;} };
+        'title_field': 'a title',
+        'int_field': 1234,
+        origin: function() {
+          return this;
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;} };
     });
 
     it('requests url correctly', function() {
@@ -78,20 +78,20 @@ describe('Service: normalDocsSvc', function () {
 
   it('escapes when no highlights', function() {
     var solrDoc = {'custom_id_field': '1234',
-                   'title_field': 'a title',
-                   'another_field': '<blah>another_value</blah>',
-                   origin: function() {
-                     return this;
-                   },
-                   url: function() {
-                     return '';
-                    },
-                   explain: function() {return mockExplain;},
-                   highlight: function() {return null;} };
-      var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subSnippets().another_field).toContain('&gt;');
-      expect(normalDoc.subSnippets().another_field).toContain('&lt;');
+      'title_field': 'a title',
+      'another_field': '<blah>another_value</blah>',
+      origin: function() {
+        return this;
+      },
+      url: function() {
+        return '';
+      },
+      explain: function() {return mockExplain;},
+      highlight: function() {return null;} };
+    var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
+    var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+    expect(normalDoc.subSnippets().another_field).toContain('&gt;');
+    expect(normalDoc.subSnippets().another_field).toContain('&lt;');
   });
 
   describe('highlight tests', function() {
@@ -100,16 +100,16 @@ describe('Service: normalDocsSvc', function () {
     beforeEach(function() {
       availableHighlight = null;
       solrDoc = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 'another_field': 'another_value',
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {
-                   return '';
-                  },
-                 explain: function() {return mockExplain;},
-                 highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;} };
+        'title_field': 'a title',
+        'another_field': 'another_value',
+        origin: function() {
+          return this;
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;},
+        highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;} };
     });
 
     it('ignores highlights for title', function() {
@@ -167,17 +167,17 @@ describe('Service: normalDocsSvc', function () {
       };
 
       solrDoc = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {return 'http://127.0.0.1';},
-                 explain: function() {return sumExplain;} };
+        'title_field': 'a title',
+        origin: function() {
+          return this;
+        },
+        url: function() {return 'http://127.0.0.1';},
+        explain: function() {return sumExplain;} };
       solrDocNoExpl = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 origin: function() {return this;},
-                 url: function() {return 'http://127.0.0.1';},
-                 explain: function() {return null;} };
+        'title_field': 'a title',
+        origin: function() {return this;},
+        url: function() {return 'http://127.0.0.1';},
+        explain: function() {return null;} };
     });
 
     it('hot matches by max sorted by percentage', function() {
@@ -275,25 +275,25 @@ describe('Service: normalDocsSvc', function () {
     beforeEach(function() {
       availableHighlights = {};
       solrDoc = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 'sub1': 'sub1_val',
-                 'sub2': 'sub2_val',
-                 origin: function() {
-                   return {'custom_id_field': idFromSrc,
-                           'title_field': titleFromSrc,
-                           'sub1': sub1FromSrc,
-                           'sub2': sub2FromSrc};
-                 },
-                 url: function() {
-                   return '';
-                  },
-                 explain: function() {return mockExplain;},
-                 highlight: function(docId, field, pre, post) {
-                   if (availableHighlights.hasOwnProperty(field)) {
-                     return pre + availableHighlights[field] + post;
-                   }
-                   return null;
-                 } };
+        'title_field': 'a title',
+        'sub1': 'sub1_val',
+        'sub2': 'sub2_val',
+        origin: function() {
+          return {'custom_id_field': idFromSrc,
+            'title_field': titleFromSrc,
+            'sub1': sub1FromSrc,
+            'sub2': sub2FromSrc};
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;},
+        highlight: function(docId, field, pre, post) {
+          if (availableHighlights.hasOwnProperty(field)) {
+            return pre + availableHighlights[field] + post;
+          }
+          return null;
+        } };
     });
 
     it('reads fields', function() {
@@ -314,23 +314,23 @@ describe('Service: normalDocsSvc', function () {
     beforeEach(function() {
       availableHighlights = {};
       solrDoc = {'custom_id_field': '1234',
-                 'title_field': 'a title',
-                 'sub1': 'sub1_val',
-                 'sub2': 'sub2_val',
-                 'fn': 2.0,
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {
-                   return '';
-                  },
-                 explain: function() {return mockExplain;},
-                 highlight: function(docId, field, pre, post) {
-                   if (availableHighlights.hasOwnProperty(field)) {
-                     return pre + availableHighlights[field] + post;
-                   }
-                   return null;
-                 } };
+        'title_field': 'a title',
+        'sub1': 'sub1_val',
+        'sub2': 'sub2_val',
+        'fn': 2.0,
+        origin: function() {
+          return this;
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;},
+        highlight: function(docId, field, pre, post) {
+          if (availableHighlights.hasOwnProperty(field)) {
+            return pre + availableHighlights[field] + post;
+          }
+          return null;
+        } };
     });
 
     it('works with an empty title', function() {
@@ -389,58 +389,58 @@ describe('Service: normalDocsSvc', function () {
     beforeEach(function() {
       availableHighlight = 'something';
       solrDoc = {'id': '1234',
-                 'title_field': 'a title',
-                 'director': { "credit_id": "52fe44fac3a36847f80b56e7", "name": "Robert Clouse" },
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {
-                   return '';
-                  },
-                 explain: function() {return mockExplain;},
-                 highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;}
-                  };
+        'title_field': 'a title',
+        'director': { 'credit_id': '52fe44fac3a36847f80b56e7', 'name': 'Robert Clouse' },
+        origin: function() {
+          return this;
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;},
+        highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;}
+      };
     });
 
     it('captures sub values with dot notation', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['director.name']};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subs["director.name"]).toEqual('Robert Clouse');
+      expect(normalDoc.subs['director.name']).toEqual('Robert Clouse');
 
       fieldSpec = {id: 'id', title: 'title_field', subs: ['director.credit_id']};
       normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subs["director.credit_id"]).toEqual('52fe44fac3a36847f80b56e7');
-      expect(normalDoc.subs["director.name"]).toBe(undefined);
+      expect(normalDoc.subs['director.credit_id']).toEqual('52fe44fac3a36847f80b56e7');
+      expect(normalDoc.subs['director.name']).toBe(undefined);
 
     });
 
     it('captures sub values with dot notation in an array', function() {
 
-      solrDoc['genres'] =  [{ "name": "Action", "id": 1 },{ "name": "Comedy", "id": 2 }]
+      solrDoc['genres'] =  [{ 'name': 'Action', 'id': 1 },{ 'name': 'Comedy', 'id': 2 }];
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['genres.name']};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
 
-      expect(normalDoc.subs["genres.name"]).toEqual(['Action', 'Comedy']);
+      expect(normalDoc.subs['genres.name']).toEqual(['Action', 'Comedy']);
     });
 
     it('captures sub values with dot notation in both an array and a dictionary', function() {
 
-      solrDoc['nesting'] =  { "genres": [ { "name": "Action", "id": 1 },{ "name": "Comedy", "id": 2 }] };
+      solrDoc['nesting'] =  { 'genres': [ { 'name': 'Action', 'id': 1 },{ 'name': 'Comedy', 'id': 2 }] };
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['nesting.genres.name']};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
 
-      expect(normalDoc.subs["nesting.genres.name"]).toEqual(['Action', 'Comedy']);
+      expect(normalDoc.subs['nesting.genres.name']).toEqual(['Action', 'Comedy']);
     });
 
     it('captures sub values when the field name has a dot in it, and it isnt using dot notation', function() {
 
-      solrDoc['actor.name'] = "Harrison Ford";
+      solrDoc['actor.name'] = 'Harrison Ford';
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['actor.name']};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subs["actor.name"]).toEqual('Harrison Ford');
+      expect(normalDoc.subs['actor.name']).toEqual('Harrison Ford');
 
     });
 
@@ -452,23 +452,23 @@ describe('Service: normalDocsSvc', function () {
     beforeEach(function() {
       availableHighlight = 'something';
       solrDoc = {'id': '1234',
-                 'title_field': 'a title',
-                 'relative_image': '/some/image.png',
-                 origin: function() {
-                   return this;
-                 },
-                 url: function() {
-                   return '';
-                  },
-                 explain: function() {return mockExplain;},
-                 highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;}
-                  };
+        'title_field': 'a title',
+        'relative_image': '/some/image.png',
+        origin: function() {
+          return this;
+        },
+        url: function() {
+          return '';
+        },
+        explain: function() {return mockExplain;},
+        highlight: function(ign, ign2, pre, post) {return pre + availableHighlight + post;}
+      };
     });
 
     it('handles passing options for an image', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['relative_image'], image: 'relative_image', image_options: {prefix: 'http://example.org/'}};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subs["relative_image"]).toEqual('/some/image.png');
+      expect(normalDoc.subs['relative_image']).toEqual('/some/image.png');
       expect(normalDoc.image).toEqual('/some/image.png');
       expect(normalDoc.hasImage()).toBeTrue();
       expect(normalDoc.image_options).toEqual({prefix: 'http://example.org/'});
@@ -479,7 +479,7 @@ describe('Service: normalDocsSvc', function () {
     it('handles passing options for a thumb', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['relative_image'], thumb: 'relative_image', thumb_options: {prefix: 'http://example.org/thumbs/'}};
       var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
-      expect(normalDoc.subs["relative_image"]).toEqual('/some/image.png');
+      expect(normalDoc.subs['relative_image']).toEqual('/some/image.png');
       expect(normalDoc.thumb).toEqual('/some/image.png');
       expect(normalDoc.hasImage()).toBeFalse();
       expect(normalDoc.hasThumb()).toBeTrue();

@@ -1,19 +1,22 @@
 /**
- * Public API for creating searchers
+ * Public API for splainer-search
  */
-import { Searcher } from '../core/Searcher.js';
-import { EngineAdapter } from '../adapters/EngineAdapter.js';
+import { createSearcher as createSearcherFromFactory } from '../factories/searcherFactory.js';
+import { createDoc } from '../factories/docFactory.js';
+import { createResolver } from '../factories/resolverFactory.js';
 
-/**
- * Create a searcher for a specific search engine
- * @param {Array} fields - Field mappings
- * @param {string} url - Search endpoint URL
- * @param {Object} params - Search parameters
- * @param {Object} options - Search options
- * @param {string} engine - Search engine type (solr, es, vectara, searchapi)
- * @returns {Searcher} Configured searcher instance
- */
-export function createSearcher(fields, url, params, options = {}, engine = null) {
-  // Implementation will be added later
-  throw new Error('createSearcher not implemented yet');
-}
+export { createSearcherFromFactory as createSearcher, createResolver, createDoc };
+
+// Export the functions directly for backward compatibility
+export const search = function(config, searchEngine) {
+  // Create a minimal config that has the searchEngine property
+  const newConfig = Object.assign({}, config);
+  newConfig.searchEngine = searchEngine;
+  
+  // Call the factory function with the correct parameters
+  const result = createSearcherFromFactory(null, null, null, null, newConfig, searchEngine);
+  return result;
+};
+
+export const resolver = createResolver;
+export const doc = createDoc;

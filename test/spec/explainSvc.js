@@ -136,20 +136,20 @@ describe('Service: explainSvc', function () {
 
     it('deals with Math.minOf', function() {
       var minOfExpl = {
+        'value': 0.033063494,
+        'description': 'Math.min of',
+        'details': [{
           'value': 0.033063494,
-          'description': 'Math.min of',
+          'description': 'Function for field created_at:',
           'details': [{
             'value': 0.033063494,
-            'description': 'Function for field created_at:',
-            'details': [{
-              'value': 0.033063494,
-              'description': 'exp(- MIN[Math.max(Math.abs(1.399894202E12(=doc value) - 1.450890423697E12(=origin))) - 0.0(=offset), 0)] * 6.68544734336367E-11)'
-            }]
-          }, {
-            'value': 3.4028235E38,
-            'description': 'maxBoost'
+            'description': 'exp(- MIN[Math.max(Math.abs(1.399894202E12(=doc value) - 1.450890423697E12(=origin))) - 0.0(=offset), 0)] * 6.68544734336367E-11)'
           }]
-        };
+        }, {
+          'value': 3.4028235E38,
+          'description': 'maxBoost'
+        }]
+      };
       var simplerExplain = explainSvc.createExplain(minOfExpl);
       // the minof is ignored, as it has one child we jump straight to the function query
       var infl = simplerExplain.influencers();
@@ -268,78 +268,78 @@ describe('Service: explainSvc', function () {
             'value': 2237.4985427856445,
             'description': 'product of:',
             'details': [
-            {
-              'match': true,
-              'value': 2.6078072,
-              'description': 'weight(text_all:rambo in 2978) [SchemaSimilarity], result of:',
-              'details': [
               {
                 'match': true,
                 'value': 2.6078072,
-                'description': 'score(freq=1.0), computed as boost * idf * tf from:',
+                'description': 'weight(text_all:rambo in 2978) [SchemaSimilarity], result of:',
                 'details': [
-                {
-                  'match': true,
-                  'value': 6.6984444,
-                  'description': 'idf, computed as log(1 + (N - n + 0.5) / (n + 0.5)) from:',
-                  'details': [
                   {
                     'match': true,
-                    'value': 10,
-                    'description': "n, number of documents containing term"
-                  },
-                  {
-                    'match': true,
-                    'value': 8516,
-                    'description': 'N, total number of documents with field'
+                    'value': 2.6078072,
+                    'description': 'score(freq=1.0), computed as boost * idf * tf from:',
+                    'details': [
+                      {
+                        'match': true,
+                        'value': 6.6984444,
+                        'description': 'idf, computed as log(1 + (N - n + 0.5) / (n + 0.5)) from:',
+                        'details': [
+                          {
+                            'match': true,
+                            'value': 10,
+                            'description': 'n, number of documents containing term'
+                          },
+                          {
+                            'match': true,
+                            'value': 8516,
+                            'description': 'N, total number of documents with field'
+                          }
+                        ]
+                      },
+                      {
+                        'match': true,
+                        'value': 0.38931537,
+                        'description': 'tf, computed as freq / (freq + k1 * (1 - b + b * dl / avgdl)) from:',
+                        'details': [
+                          {
+                            'match': true,
+                            'value': 1,
+                            'description': 'freq, occurrences of term within document'
+                          },
+                          {
+                            'match': true,
+                            'value': 1.2,
+                            'description': 'k1, term saturation parameter'
+                          },
+                          {
+                            'match': true,
+                            'value': 0.75,
+                            'description': 'b, length normalization parameter'
+                          },
+                          {
+                            'match': true,
+                            'value': 168,
+                            'description': 'dl, length of field (approximate)'
+                          },
+                          {
+                            'match': true,
+                            'value': 119.18542,
+                            'description': 'avgdl, average length of field'
+                          }
+                        ]
+                      }
+                    ]
                   }
-                  ]
-                },
-                {
-                  'match': true,
-                  'value': 0.38931537,
-                  'description': "tf, computed as freq / (freq + k1 * (1 - b + b * dl / avgdl)) from:",
-                  'details': [
-                  {
-                    'match': true,
-                    'value': 1,
-                    'description': "freq, occurrences of term within document"
-                  },
-                  {
-                    'match': true,
-                    'value': 1.2,
-                    'description': "k1, term saturation parameter"
-                  },
-                  {
-                    'match': true,
-                    'value': 0.75,
-                    'description': "b, length normalization parameter"
-                  },
-                  {
-                    'match': true,
-                    'value': 168,
-                    'description': 'dl, length of field (approximate)'
-                  },
-                  {
-                    'match': true,
-                    'value': 119.18542,
-                    'description': 'avgdl, average length of field'
-                  }
-                  ]
-                }
                 ]
+              },
+              {
+                'match': true,
+                'value': 858,
+                'description': 'sum(int(vote_count)=858,const(0))'
               }
-              ]
-            },
-            {
-              'match': true,
-              'value': 858,
-              'description': 'sum(int(vote_count)=858,const(0))'
-            }
             ]
           }
         ]
-        };
+      };
       var multiplicativeExplain = explainSvc.createExplain(multiplicativeExpl);
       var infl = multiplicativeExplain.influencers();
 
@@ -361,44 +361,44 @@ describe('Service: explainSvc', function () {
       var multiplicativeExpl = {
         match: true,
         value: 1,
-        description: "boost(+technicalDescriptionClean_text_de_mv:70 (),termfreq(technicalDescriptionClean_text_de_mv,70)), product of:",
+        description: 'boost(+technicalDescriptionClean_text_de_mv:70 (),termfreq(technicalDescriptionClean_text_de_mv,70)), product of:',
         details: [
           {
             match: true,
             value: 1,
-            description: "sum of:",
+            description: 'sum of:',
             details: [
               {
                 match: true,
                 value: 1,
-                description: "weight(technicalDescriptionClean_text_de_mv:70 in 0) [DefaultSimilarity], result of:",
+                description: 'weight(technicalDescriptionClean_text_de_mv:70 in 0) [DefaultSimilarity], result of:',
                 details: [
                   {
                     match: true,
                     value: 1,
-                    description: "fieldWeight in 0, product of:",
+                    description: 'fieldWeight in 0, product of:',
                     details: [
                       {
                         match: true,
                         value: 1,
-                        description: "tf(freq=1.0), with freq of:",
+                        description: 'tf(freq=1.0), with freq of:',
                         details: [
                           {
                             match: true,
                             value: 1,
-                            description: "termFreq=1.0"
+                            description: 'termFreq=1.0'
                           }
                         ]
                       },
                       {
                         match: true,
                         value: 1,
-                        description: "idf(docFreq=1, maxDocs=2)"
+                        description: 'idf(docFreq=1, maxDocs=2)'
                       },
                       {
                         match: true,
                         value: 1,
-                        description: "fieldNorm(doc=0)"
+                        description: 'fieldNorm(doc=0)'
                       }
                     ]
                   }
@@ -409,7 +409,7 @@ describe('Service: explainSvc', function () {
           {
             match: true,
             value: 1,
-            description: "termfreq(technicalDescriptionClean_text_de_mv,70)=1"
+            description: 'termfreq(technicalDescriptionClean_text_de_mv,70)=1'
           }
         ]
       };

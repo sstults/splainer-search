@@ -15,14 +15,14 @@ describe('Service: searchSvc: Vectara', function() {
   let mockFieldSpec = null;
   const mockQueryText = 'test';
   const mockVectaraParam = { query: [
-      {
-        query: '#$query##',
-        numResults: 10,
-        corpusKey :[{
-          corpusId: 1
-        }]
-      }
-    ]};
+    {
+      query: '#$query##',
+      numResults: 10,
+      corpusKey :[{
+        corpusId: 1
+      }]
+    }
+  ]};
 
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
@@ -39,34 +39,34 @@ describe('Service: searchSvc: Vectara', function() {
   var mockVectaraResults = {
     responseSet: [ {
       response: [
-          // ignored and omitted here, the response contains the extracted matches, but in splainer we only evaluate
-          // use the information from the documents array below
+        // ignored and omitted here, the response contains the extracted matches, but in splainer we only evaluate
+        // use the information from the documents array below
       ],
       status: [],
       document: [
         {
-          "id": "1",
-          "metadata": [
+          'id': '1',
+          'metadata': [
             {
-              "name": "field1",
-              "value": "1--field1 value"
+              'name': 'field1',
+              'value': '1--field1 value'
             },
             {
-              "name": "field2",
-              "value": "1--field2 value"
+              'name': 'field2',
+              'value': '1--field2 value'
             }
           ]
         },
         {
-          "id": "2",
-          "metadata": [
+          'id': '2',
+          'metadata': [
             {
-              "name": "field1",
-              "value": "2--field1 value"
+              'name': 'field1',
+              'value': '2--field1 value'
             },
             {
-              "name": "field2",
-              "value": "2--field2 value"
+              'name': 'field2',
+              'value': '2--field2 value'
             }
           ]
         },
@@ -75,20 +75,20 @@ describe('Service: searchSvc: Vectara', function() {
       summary: [],
       futureId: 1
     }],
-    "status": [],
-    "metrics": null
-  }
+    'status': [],
+    'metrics': null
+  };
 
   describe('vectara search', function () {
 
     beforeEach(inject(function () {
       searcher = searchSvc.createSearcher(
-          mockFieldSpec,
-          mockVectaraUrl,
-          mockVectaraParam,
-          mockQueryText,
-          {},
-          'vectara'
+        mockFieldSpec,
+        mockVectaraUrl,
+        mockVectaraParam,
+        mockQueryText,
+        {},
+        'vectara'
       );
     }));
 
@@ -98,16 +98,16 @@ describe('Service: searchSvc: Vectara', function() {
       var called = 0;
 
       searcher.search()
-          .then(function () {
-            var docs = searcher.docs;
-            expect(docs.length === 2);
+        .then(function () {
+          var docs = searcher.docs;
+          expect(docs.length === 2);
 
-            expect(docs[0].field1).toEqual("1--field1 value");
-            expect(docs[0].field2).toEqual("1--field2 value");
-            expect(docs[1].field1).toEqual("2--field1 value");
-            expect(docs[1].field2).toEqual("2--field2 value");
-            called++;
-          });
+          expect(docs[0].field1).toEqual('1--field1 value');
+          expect(docs[0].field2).toEqual('1--field2 value');
+          expect(docs[1].field1).toEqual('2--field1 value');
+          expect(docs[1].field2).toEqual('2--field2 value');
+          called++;
+        });
 
       $httpBackend.flush();
       $httpBackend.verifyNoOutstandingExpectation();

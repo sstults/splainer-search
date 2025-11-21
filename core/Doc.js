@@ -65,4 +65,20 @@ export class Doc {
     
     throw new Error('NotSupported');
   }
+
+  /**
+   * Gets the document ID from the source
+   * @returns {string|undefined} Document ID or undefined
+   */
+  get id() {
+    return this._source.id;
+  }
+
+  /**
+   * Gets the document title from the source
+   * @returns {string|undefined} Document title or undefined
+   */
+  get title() {
+    return this._source.title;
+  }
 }

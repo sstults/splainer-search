@@ -1,66 +1,19 @@
-'use strict';
+/**
+ * Factory for creating docs
+ */
+import { Doc } from '../core/Doc.js';
 
-/*jslint latedef:false*/
-
-(function() {
-  angular.module('o19s.splainer-search')
-    .factory('DocFactory', [DocFactory]);
-
-  function DocFactory() {
-    var Doc = function(doc, opts) {
-      var self = this;
-      angular.copy(doc, self);
-      self.doc = doc;
-      self.opts = opts;
-    };
-
-    Doc.prototype = {};
-    Doc.prototype.groupedBy = groupedBy;
-    Doc.prototype.group = group;
-    Doc.prototype.options = options;
-    Doc.prototype.version = version;
-    Doc.prototype.fieldsAttrName = fieldsAttrName;
-    Doc.prototype.fieldsProperty = fieldsProperty;
-
-    function groupedBy() {
-      if (this.opts.groupedBy === undefined) {
-        return null;
-      } else {
-        return this.opts.groupedBy;
-      }
-    }
-
-    function options() {
-      return this.opts;
-    }
-
-    function group() {
-      if (this.opts.group === undefined) {
-        return null;
-      } else {
-        return this.opts.group;
-      }
-    }
-
-    function version() {
-      if (this.opts.version === undefined) {
-        return null;
-      } else {
-        return this.opts.version;
-      }
-    }
-
-    function fieldsAttrName() {
-      return '_source';
-    }
-
-    function fieldsProperty() {
-      /*jslint validthis:true*/
-      var self = this;
-      return self[self.fieldsAttrName()];
-    }
-
-    // Return factory object
-    return Doc;
-  }
-})();
+/**
+ * Create a doc instance
+ * @param {Object} source - Document source
+ * @param {Object} highlight - Highlight information
+ * @param {string} searchEngine - Search engine type (solr, elasticsearch, algolia, vectara, searchapi)
+ * @returns {Object} Doc instance
+ */
+export function createDoc(source, highlight, searchEngine) {
+  // Create doc instance
+  const docInstance = new Doc({ source, highlight, explain: null });
+  
+  // Return doc instance
+  return docInstance;
+}

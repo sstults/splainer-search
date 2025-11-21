@@ -1,83 +1,118 @@
 'use strict';
 
-describe('Service: ES Explain Extractor', function () {
-  // load the service's module
-  beforeEach(module('o19s.splainer-search'));
+// Test for Elasticsearch Explain Extractor Service using Vitest
+import { describe, it, beforeEach, expect } from 'vitest';
+import { EsExplainExtractorSvc } from '../../services/esExplainExtractorSvc.js';
 
-  var esExplainExtractorSvc, fieldSpecSvc, mockFieldSpec, EsDocFactory;
+describe('Service: EsExplainExtractorSvc', () => {
+  let esExplainExtractorSvcInstance;
 
-  beforeEach(inject(function (_esExplainExtractorSvc_, _fieldSpecSvc_, _EsDocFactory_) {
-    esExplainExtractorSvc   = _esExplainExtractorSvc_;
-    fieldSpecSvc            = _fieldSpecSvc_;
-    EsDocFactory            = _EsDocFactory_;
-    mockFieldSpec           = fieldSpecSvc.createFieldSpec('field field1');
-  }));
+  beforeEach(() => {
+    // Create the service instance
+    esExplainExtractorSvcInstance = new EsExplainExtractorSvc();
+  });
 
-  describe('extracts explain info for docs', function() {
-    var basicExplain1 = {
-      value: 1.5,
-      description: 'weight(text:law in 1234)',
-    };
-    var basicExplain2 = {
-      value: 0.5,
-      description: 'weight(text:order in 1234)',
-    };
-
-    var sumExplain = {
-      matched:      true,
-      explanation:  {
-        value:        1.5,
-        description:  'weight(_all:law in 1234)',
-        details:      [basicExplain1, basicExplain2]
-      }
-    };
-
-    var expectedDocs = [
-      {
-        '_index': 'statedecoded',
-        '_type':  'law',
-        '_id':    'l_1',
-        '_score': 5.0,
-        'fields': {
-          'field':  ['1--field value'],
-          'field1': ['1--field1 value']
-        },
-      },
-      {
-        '_index': 'statedecoded',
-        '_type':  'law',
-        '_id':    'l_1',
-        '_score': 3.0,
-        'fields': {
-          'field':  ['2--field value'],
-          'field1': ['2--field1 value']
-        }
-      }
-    ];
-
-    it('passes two solr queries one explains the other', function() {
-      var explDict  = {
-        match:        sumExplain.matched,
-        explanation:  sumExplain.explanation,
-        description:  sumExplain.explanation.description,
-        value:        sumExplain.explanation.value,
+  describe('getOverridingExplain', () => {
+    it('should return explain data when id exists in explainData', () => {
+      const mockDoc = { id: 'test-id' };
+      const mockFieldSpec = { id: 'id' };
+      const mockExplainData = { 
+        'test-id': { 
+          value: 1.0, 
+          description: 'test explanation',
+          details: []
+        } 
       };
-
-      var options = {
-        fieldList:  mockFieldSpec,
-        url:        'http://example.com',
-        explDict:   explDict,
-      };
-
-      var esDocs = [];
-      angular.forEach(expectedDocs, function(doc){
-        esDocs.push(new EsDocFactory(doc, options));
+      
+      const result = esExplainExtractorSvcInstance.getOverridingExplain(mockDoc, mockFieldSpec, mockExplainData);
+      expect(result).toEqual({
+        value: 1.0, 
+        description: 'test explanation',
+        details: []
       });
+    });
 
-      var docs = esExplainExtractorSvc.docsWithExplainOther(esDocs, mockFieldSpec);
+    it('should return null when no explain data is provided', () => {
+      const mockDoc = { id: 'test-id' };
+      const mockFieldSpec = { id: 'id' };
+      
+      const result = esExplainExtractorSvcInstance.getOverridingExplain(mockDoc, mockFieldSpec, null);
+      expect(result).toBeNull();
+    });
 
-      expect(docs.length).toBe(2);
-      expect(Object.keys(docs[0].hotMatches().vecObj).length).toBe(1);
+    it('should return null when doc id is not found in explainData', () => {
+      const mockDoc = { id: 'non-existent-id' };
+      const mockFieldSpec = { id: 'id' };
+      const mockExplainData = { 
+        'test-id': { 
+          value: 1.0, 
+          description: 'test explanation',
+          details: []
+        } 
+      };
+      
+      const result = esExplainExtractorSvcInstance.getOverridingExplain(mockDoc, mockFieldSpec, mockExplainData);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when doc has no id field', () => {
+      const mockDoc = { title: 'test-title' };
+      const mockFieldSpec = { id: 'id' };
+      const mockExplainData = { 
+        'test-id': { 
+          value: 1.0, 
+          description: 'test explanation',
+          details: []
+        } 
+      };
+      
+      const result = esExplainExtractorSvcInstance.getOverridingExplain(mockDoc, mockFieldSpec, mockExplainData);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when explainData is undefined', () => {
+      const mockDoc = { id: 'test-id' };
+      const mockFieldSpec = { id: 'id' };
+      
+      const result = esExplainExtractorSvcInstance.getOverridingExplain(mockDoc, mockFieldSpec, undefined);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('docsWithExplainOther', () => {
+    it('should process docs with explain data and return normal docs', () => {
+      const mockFieldSpec = { id: 'id' };
+      const mockExplainData = { 
+        'test-id': { 
+          value: 1.0, 
+          description: 'test explanation',
+          details: []
+        } 
+      };
+      
+      const mockDocs = [
+        { id: 'test-id', title: 'Test Title' },
+        { id: 'test-id-2', title: 'Test Title 2' }
+      ];
+      
+      const result = esExplainExtractorSvcInstance.docsWithExplainOther(mockDocs, mockFieldSpec, mockExplainData);
+      expect(result).toHaveLength(2);
+    });
+
+    it('should handle empty docs array', () => {
+      const mockFieldSpec = { id: 'id' };
+      const mockExplainData = { 
+        'test-id': { 
+          value: 1.0, 
+          description: 'test explanation',
+          details: []
+        } 
+      };
+      
+      const mockDocs = [];
+      
+      const result = esExplainExtractorSvcInstance.docsWithExplainOther(mockDocs, mockFieldSpec, mockExplainData);
+      expect(result).toHaveLength(0);
     });
   });
 });

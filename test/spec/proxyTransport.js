@@ -45,9 +45,9 @@ describe('Service: transport', function() {
     var url = 'http://es.splainer-search.com/foods/tacos/_msearch';
     var headers = {'header': 1};
     var headersToReceive = {
-      "header":1,
-      "Accept":"application/json, text/plain, */*"
-    }
+      'header':1,
+      'Accept':'application/json, text/plain, */*'
+    };
     var getTransport = new HttpGetTransportFactory();
     var payloadTemplate = {'test': 0};
     var payload = angular.copy(payloadTemplate);
@@ -61,7 +61,7 @@ describe('Service: transport', function() {
   it('can take options', function () {
     var url = 'http://es.splainer-search.com/foods/tacos/_msearch';
     var headers = {'header': 1};
-    var options = {option1: true, "option2":"hello"};
+    var options = {option1: true, 'option2':'hello'};
     var getTransport = new HttpGetTransportFactory(options);
     var payloadTemplate = {'test': 0};
     var payload = angular.copy(payloadTemplate);

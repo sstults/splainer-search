@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "description": "A framework-agnostic search library for Solr, Elasticsearch, OpenSearch, and Vectara",
   "type": "module",
-  "main": "api/index.js",
+  "main": "module.js",
   "exports": {
     ".": {
-      "import": "./api/index.js",
-      "require": "./api/index.cjs"
+      "import": "./module.js",
+      "require": "./module.cjs"
     }
   },
   "scripts": {
-    "build": "tsup api/index.js --format esm,cjs --dts --sourcemap",
+    "build": "tsup module.js --format esm,cjs --dts --sourcemap",
     "test": "vitest run",
     "dev:test": "vitest",
     "lint": "eslint . --ext .js",
@@ -37,6 +37,7 @@
     "core/",
     "adapters/",
     "net/",
-    "util/"
+    "util/",
+    "module.js"
   ]
 }

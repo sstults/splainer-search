@@ -14,18 +14,18 @@ describe('Service: queryTemplateSvc', function () {
       
       var queryText = 'rambo movie';
       var template  = {
-        "query": "#$query##"
-      }
+        'query': '#$query##'
+      };
       
-      template = JSON.stringify(template)
+      template = JSON.stringify(template);
       
       var replaced = queryTemplateSvc.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
       
-      replaced = angular.fromJson(replaced)
+      replaced = angular.fromJson(replaced);
       
       var expectedReplaced = {
-        query: "rambo movie"
-      }
+        query: 'rambo movie'
+      };
             
       expect(replaced).toEqual(expectedReplaced);
     });
@@ -39,73 +39,73 @@ describe('Service: queryTemplateSvc', function () {
         customerId: 123456789,
         corpusId: 1,
         dims: [
-          { name: "customDim1", weight: 0.8 },
-          { name: "customDim2", weight: 0.6 }
+          { name: 'customDim1', weight: 0.8 },
+          { name: 'customDim2', weight: 0.6 }
         ]
       };
 
       var template =  {
-        "query": [
+        'query': [
           {
-            "query": "#$query##",
-            "start": 0,
-            "numResults": 10,
-            "corpusKey": [{
-              "customerId": "#$qOption.customerId##",
-              "corpusId": "#$qOption.corpusId##",
-              "lexicalInterpolationConfig": {
-                 "lambda": 0.025
-               },
-              "dim": "#$qOption.dims##"
+            'query': '#$query##',
+            'start': 0,
+            'numResults': 10,
+            'corpusKey': [{
+              'customerId': '#$qOption.customerId##',
+              'corpusId': '#$qOption.corpusId##',
+              'lexicalInterpolationConfig': {
+                'lambda': 0.025
+              },
+              'dim': '#$qOption.dims##'
             }]
           }
         ]
-      }
+      };
       
       var replaced = queryTemplateSvc.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
       
       var expectedReplaced = {
-        "query": [
+        'query': [
           {
-            "query": "rambo movie",
-            "start": 0,
-            "numResults": 10,
-            "corpusKey": [{
-              "customerId": 123456789,
-              "corpusId": 1,
-              "lexicalInterpolationConfig": {
-                 "lambda": 0.025
-               },
-              "dim": [{ name: "customDim1", weight: 0.8 }, { name: "customDim2", weight: 0.6 }]
+            'query': 'rambo movie',
+            'start': 0,
+            'numResults': 10,
+            'corpusKey': [{
+              'customerId': 123456789,
+              'corpusId': 1,
+              'lexicalInterpolationConfig': {
+                'lambda': 0.025
+              },
+              'dim': [{ name: 'customDim1', weight: 0.8 }, { name: 'customDim2', weight: 0.6 }]
             }]
           }
         ]
-      }
+      };
             
       expect(replaced).toEqual(expectedReplaced);
     });
 
     it('passes through arrays', function() {
-      const queryText = "test query"
+      const queryText = 'test query';
       const qOption = {
-        "complexDoc": {
-          "doc_id": 1,
-          "prefix": "doc"
+        'complexDoc': {
+          'doc_id': 1,
+          'prefix': 'doc'
         }
-      }
+      };
       const template  = {
-        "query": {
-          "query": "#$query##",
-          "docs": ["#$qOption.complexDoc##", "doc2", "doc3"]
+        'query': {
+          'query': '#$query##',
+          'docs': ['#$qOption.complexDoc##', 'doc2', 'doc3']
         }
-      }
+      };
       const replaced = queryTemplateSvc.hydrate(template, queryText, { qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
       var expectedReplaced = {
         query: {
-          query: "test query",
-          docs: [ { "doc_id": 1, "prefix": "doc" }, "doc2", "doc3"]
+          query: 'test query',
+          docs: [ { 'doc_id': 1, 'prefix': 'doc' }, 'doc2', 'doc3']
         }
-      }
+      };
       expect(replaced).toEqual(expectedReplaced);
     });
 
@@ -119,34 +119,34 @@ describe('Service: queryTemplateSvc', function () {
       };
 
       var template =  {
-        "query": {
-          "query": "#$query##",
-          "filter": "filter: #$filter##",
-          "size": "#$qOption.size##",
-          "category": "#$qOption.category##",
-          "sort": "#$qOption.sort|score##",
-          "from": "from #$qOption.from##"
+        'query': {
+          'query': '#$query##',
+          'filter': 'filter: #$filter##',
+          'size': '#$qOption.size##',
+          'category': '#$qOption.category##',
+          'sort': '#$qOption.sort|score##',
+          'from': 'from #$qOption.from##'
         },
-        "other": {
-          "param": "#$unknown.object.path##"
+        'other': {
+          'param': '#$unknown.object.path##'
         }
-      }
+      };
 
       var replaced = queryTemplateSvc.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
 
       var expectedReplaced = {
-        "query": {
-          "query": "rambo movie",
-          "filter": "filter: #$filter##",
-          "size": "#$qOption.size##",
-          "category": 123456789,
-          "sort": "score",
-          "from": "from 10"
+        'query': {
+          'query': 'rambo movie',
+          'filter': 'filter: #$filter##',
+          'size': '#$qOption.size##',
+          'category': 123456789,
+          'sort': 'score',
+          'from': 'from 10'
         },
-        "other": {
-          "param": "#$unknown.object.path##"
+        'other': {
+          'param': '#$unknown.object.path##'
         }
-      }
+      };
 
       expect(replaced).toEqual(expectedReplaced);
     });
@@ -155,18 +155,18 @@ describe('Service: queryTemplateSvc', function () {
 
       var queryText = 'rambo movie';
       var template  = {
-        "query": "#$keyword1## and #$keyword.1## and #$keyword3|other##"
-      }
+        'query': '#$keyword1## and #$keyword.1## and #$keyword3|other##'
+      };
 
-      template = JSON.stringify(template)
+      template = JSON.stringify(template);
 
       var replaced = queryTemplateSvc.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
 
-      replaced = angular.fromJson(replaced)
+      replaced = angular.fromJson(replaced);
 
       var expectedReplaced = {
-        query: "rambo and movie and other"
-      }
+        query: 'rambo and movie and other'
+      };
 
       expect(replaced).toEqual(expectedReplaced);
     });

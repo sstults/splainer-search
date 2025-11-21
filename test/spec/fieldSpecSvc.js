@@ -235,10 +235,10 @@ describe('Service: fieldSpecSvc', function () {
     expect(fieldSpec.id).toEqual('foo_id');
     expect(fieldList).toContain('"foo.bar"');
 
-    fieldSpec = fieldSpecSvc.createFieldSpec("id:foo_id, 'foo.bar'");
+    fieldSpec = fieldSpecSvc.createFieldSpec('id:foo_id, \'foo.bar\'');
     fieldList = fieldSpec.fieldList();
     expect(fieldSpec.id).toEqual('foo_id');
-    expect(fieldList).toContain("'foo.bar'");
+    expect(fieldList).toContain('\'foo.bar\'');
   });
 
   // Note, we may eliminate this as wonky and unused.  Eric.
@@ -255,7 +255,7 @@ describe('Service: fieldSpecSvc', function () {
     expect(fieldSpec.id).toEqual('foo_id');
     expect(fieldSpec.title).toEqual('atitlefield');
     expect(fieldSpec.image).toContain('image_url');
-    expect(fieldSpec.image_options).toEqual({prefix: "http://example.org/images", height: 250});
+    expect(fieldSpec.image_options).toEqual({prefix: 'http://example.org/images', height: 250});
     expect(fieldSpec.subs).toContain('subfield2');
   });
   
@@ -264,7 +264,7 @@ describe('Service: fieldSpecSvc', function () {
     expect(fieldSpec.id).toEqual('foo_id');
     expect(fieldSpec.title).toEqual('atitlefield');
     expect(fieldSpec.thumb).toContain('image_url');
-    expect(fieldSpec.thumb_options).toEqual({prefix: "http://example.org/thumbs", height: 250});
+    expect(fieldSpec.thumb_options).toEqual({prefix: 'http://example.org/thumbs', height: 250});
     expect(fieldSpec.subs).toContain('subfield2');
   });  
 

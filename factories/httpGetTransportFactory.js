@@ -1,30 +1,25 @@
 'use strict';
 
-/*jslint latedef:false*/
+/**
+ * HTTP GET Transport factory
+ */
+import { TransportFactory } from './transportFactory.js';
+import { http } from '../utils/http.js';
 
-(function() {
-  angular.module('o19s.splainer-search')
-    .factory('HttpGetTransportFactory', [
-      'TransportFactory',
-      '$http',
-      HttpGetTransportFactory
-    ]);
+export function HttpGetTransportFactory(TransportFactory, $http) {
+  var Transport = function(options) {
+    TransportFactory.call(this, options);
+  };
 
-  function HttpGetTransportFactory(TransportFactory, $http) {
-    var Transport = function(options) {
-      TransportFactory.call(this, options);
-    };
+  Transport.prototype = Object.create(TransportFactory.prototype);
+  Transport.prototype.constructor = Transport;
 
-    Transport.prototype = Object.create(TransportFactory.prototype);
-    Transport.prototype.constructor = Transport;
+  Transport.prototype.query = query;
 
-    Transport.prototype.query = query;
-
-    function query(url, payload, headers) {
-      var requestConfig = { headers: headers };
-      return $http.get(url, requestConfig);
-    }
-
-    return Transport;
+  function query(url, payload, headers) {
+    var requestConfig = { headers: headers };
+    return http.get(url, requestConfig);
   }
-})();
+
+  return Transport;
+}

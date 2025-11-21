@@ -19,7 +19,6 @@
   "smarttabs": true,
   "validthis": true,
   "globals": {
-    "angular": false,
     "inject": false,
     "Promise": false,
     "URI": false
