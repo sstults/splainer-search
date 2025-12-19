@@ -138,6 +138,11 @@ export function esUrlSvc() {
     var url = self.buildBaseUrl(uri);
     url = url + uri.pathname;
 
+    // Handle trailing slash in pathname
+    if (url.endsWith('/')) {
+      url = url.slice(0, -1);
+    }
+
     // Return original URL if no params to append.
     if ( isDefined(uri.params) === false && isDefined(uri.query) === false ) {
       return url;
@@ -145,9 +150,12 @@ export function esUrlSvc() {
 
     var paramsAsStrings = [];
 
-    Object.keys(uri.params).forEach(function(key) {
-      paramsAsStrings.push(key + '=' + uri.params[key]);
-    });
+    // Check if uri.params exists and is an object before iterating
+    if (isDefined(uri.params) && uri.params !== null && typeof uri.params === 'object') {
+      Object.keys(uri.params).forEach(function(key) {
+        paramsAsStrings.push(key + '=' + uri.params[key]);
+      });
+    }
 
     if ( isDefined(uri.query) && uri.query !== '' ) {
       paramsAsStrings.push(uri.query);

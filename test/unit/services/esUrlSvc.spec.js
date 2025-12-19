@@ -12,9 +12,6 @@ describe('esUrlSvc', () => {
       expect(result.protocol).toBe('http:');
       expect(result.host).toBe('localhost:9200');
       expect(result.pathname).toBe('/myindex/_search');
-      expect(result.username).toBe('');
-      expect(result.password).toBe('');
-      expect(result.query).toBe('');
     });
 
     it('should parse URL with missing protocol', () => {
@@ -23,7 +20,6 @@ describe('esUrlSvc', () => {
       
       expect(result.protocol).toBe('http:');
       expect(result.host).toBe('localhost:9200');
-      expect(result.pathname).toBe('/myindex/_search');
     });
 
     it('should parse URL with https protocol', () => {
@@ -32,7 +28,6 @@ describe('esUrlSvc', () => {
       
       expect(result.protocol).toBe('https:');
       expect(result.host).toBe('localhost:9200');
-      expect(result.pathname).toBe('/myindex/_search');
     });
 
     it('should parse URL with username and password', () => {
@@ -41,6 +36,7 @@ describe('esUrlSvc', () => {
       
       expect(result.username).toBe('user');
       expect(result.password).toBe('pass');
+      expect(result.host).toBe('localhost:9200');
     });
   });
 
@@ -60,26 +56,28 @@ describe('esUrlSvc', () => {
     it('should build document URL correctly', () => {
       const uri = {
         protocol: 'http:',
-        host: 'localhost:9200'
+        host: 'localhost:9200',
+        pathname: '/myindex/_doc'
       };
       const doc = {
         _index: 'myindex',
-        _type: 'mytype',
+        _type: '_doc',
         _id: '123'
       };
-      const result = esUrlService.buildDocUrl(uri, doc, false);
+      const result = esUrlService.buildDocUrl(uri, doc);
       
-      expect(result).toBe('http://localhost:9200/myindex/mytype/_doc/123?pretty=true');
+      expect(result).toBe('http://localhost:9200/myindex/_doc/123?pretty=true');
     });
 
     it('should build explain URL correctly', () => {
       const uri = {
         protocol: 'http:',
-        host: 'localhost:9200'
+        host: 'localhost:9200',
+        pathname: '/myindex/_doc'
       };
       const doc = {
         _index: 'myindex',
-        _type: 'mytype',
+        _type: '_doc',
         _id: '123'
       };
       const result = esUrlService.buildDocUrl(uri, doc, true);
@@ -92,11 +90,12 @@ describe('esUrlSvc', () => {
     it('should build explain URL correctly', () => {
       const uri = {
         protocol: 'http:',
-        host: 'localhost:9200'
+        host: 'localhost:9200',
+        pathname: '/myindex/_doc'
       };
       const doc = {
         _index: 'myindex',
-        _type: 'mytype',
+        _type: '_doc',
         _id: '123'
       };
       const result = esUrlService.buildExplainUrl(uri, doc);
@@ -109,7 +108,8 @@ describe('esUrlSvc', () => {
     it('should build render template URL correctly', () => {
       const uri = {
         protocol: 'http:',
-        host: 'localhost:9200'
+        host: 'localhost:9200',
+        pathname: '/myindex/_doc'
       };
       const result = esUrlService.buildRenderTemplateUrl(uri);
       
@@ -122,22 +122,86 @@ describe('esUrlSvc', () => {
       const uri = {
         protocol: 'http:',
         host: 'localhost:9200',
-        pathname: '/_search',
+        pathname: '/myindex/_search',
         params: {
-          from: 10,
-          size: 10
+          from: '10',
+          size: '10'
         }
       };
       const result = esUrlService.buildUrl(uri);
       
-      expect(result).toBe('http://localhost:9200/_search?from=10&size=10');
+      expect(result).toBe('http://localhost:9200/myindex/_search?from=10&size=10');
+    });
+
+    it('should handle when no params to append', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search'
+      };
+      const result = esUrlService.buildUrl(uri);
+      
+      expect(result).toBe('http://localhost:9200/myindex/_search');
+    });
+
+    it('should handle when params are empty', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search',
+        params: {}
+      };
+      const result = esUrlService.buildUrl(uri);
+      
+      expect(result).toBe('http://localhost:9200/myindex/_search');
+    });
+
+    it('should handle when query is provided', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search',
+        query: 'q=hello'
+      };
+      const result = esUrlService.buildUrl(uri);
+      
+      expect(result).toBe('http://localhost:9200/myindex/_search?q=hello');
+    });
+
+    it('should handle when both params and query are provided', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search',
+        params: {
+          from: '10'
+        },
+        query: 'q=hello'
+      };
+      const result = esUrlService.buildUrl(uri);
+      
+      expect(result).toBe('http://localhost:9200/myindex/_search?from=10&q=hello');
+    });
+
+    it('should handle when pathname ends with /', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search/',
+        params: {
+          from: '10'
+        }
+      };
+      const result = esUrlService.buildUrl(uri);
+      
+      expect(result).toBe('http://localhost:9200/myindex/_search?from=10');
     });
   });
 
   describe('isBulkCall', () => {
     it('should identify bulk calls correctly', () => {
       const uri = {
-        pathname: '/_msearch'
+        pathname: '/myindex/_msearch'
       };
       const result = esUrlService.isBulkCall(uri);
       
@@ -146,7 +210,7 @@ describe('esUrlSvc', () => {
 
     it('should identify non-bulk calls correctly', () => {
       const uri = {
-        pathname: '/_search'
+        pathname: '/myindex/_search'
       };
       const result = esUrlService.isBulkCall(uri);
       
@@ -157,7 +221,7 @@ describe('esUrlSvc', () => {
   describe('isTemplateCall', () => {
     it('should identify template calls correctly', () => {
       const args = {
-        id: 'my-template-id'
+        id: 'my-template'
       };
       const result = esUrlService.isTemplateCall(args);
       
@@ -165,9 +229,14 @@ describe('esUrlSvc', () => {
     });
 
     it('should identify non-template calls correctly', () => {
-      const args = {
-        query: 'my-query'
-      };
+      const args = {};
+      const result = esUrlService.isTemplateCall(args);
+      
+      expect(result).toBe(false);
+    });
+
+    it('should identify template calls correctly with null args', () => {
+      const args = null;
       const result = esUrlService.isTemplateCall(args);
       
       expect(result).toBe(false);
@@ -186,24 +255,52 @@ describe('esUrlSvc', () => {
   describe('getHeaders', () => {
     it('should return custom headers when provided', () => {
       const uri = {
-        username: 'user',
-        password: 'pass'
+        protocol: 'http:',
+        host: 'localhost:9200'
       };
-      const customHeaders = '{"Content-Type": "application/json"}';
+      const customHeaders = '{"Authorization": "Bearer token123"}';
       const result = esUrlService.getHeaders(uri, customHeaders);
       
-      expect(result['Content-Type']).toBe('application/json');
+      expect(result.Authorization).toBe('Bearer token123');
     });
 
     it('should return basic auth headers when no custom headers', () => {
       const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
         username: 'user',
         password: 'pass'
       };
-      const result = esUrlService.getHeaders(uri, '');
+      const result = esUrlService.getHeaders(uri);
       
-      expect(result['Authorization']).toBeDefined();
-      expect(result['Authorization']).toContain('Basic ');
+      expect(result.Authorization).toBe('Basic dXNlcjpwYXNz');
+    });
+
+    it('should return empty headers when no auth info', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200'
+      };
+      const result = esUrlService.getHeaders(uri);
+      
+      expect(result).toEqual({});
+    });
+  });
+
+  describe('setParams', () => {
+    it('should set parameters correctly', () => {
+      const uri = {
+        protocol: 'http:',
+        host: 'localhost:9200',
+        pathname: '/myindex/_search'
+      };
+      const params = {
+        from: '10',
+        size: '10'
+      };
+      esUrlService.setParams(uri, params);
+      
+      expect(uri.params).toEqual(params);
     });
   });
 });

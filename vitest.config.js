@@ -6,7 +6,20 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./test/setup.js'],
     coverage: {
-      enabled: false,
+      enabled: true,
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      exclude: [
+        'node_modules/**',
+        'test/**',
+        'vitest.config.js',
+        'module.js',
+        'adapters/algolia/**',
+        'adapters/elasticsearch/**',
+        'adapters/searchApi/**',
+        'adapters/solr/**',
+        'adapters/vectara/**',
+      ],
     },
   },
 });

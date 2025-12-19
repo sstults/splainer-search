@@ -138,4 +138,47 @@ describe('solrUrlSvc', () => {
       expect(solrArgs.debug).toBeUndefined();
     });
   });
+
+  describe('parseSolrArgs with invalid URI', () => {
+    it('should handle URI decoding errors gracefully', () => {
+      // This test ensures the URI decoding error handling works
+      const argsStr = 'q=hello%20world&invalid=%';
+      const result = solrUrlService.parseSolrArgs(argsStr);
+      
+      expect(result.q).toEqual(['hello world']);
+      expect(result.invalid).toEqual(['%']); // Should not crash on invalid percent encoding
+    });
+  });
+
+  describe('parseSolrPath with edge cases', () => {
+    it('should handle empty path correctly', () => {
+      const pathStr = '';
+      const result = solrUrlService.parseSolrPath(pathStr);
+      
+      expect(result).toBeNull();
+    });
+
+    it('should handle single component path correctly', () => {
+      const pathStr = 'single';
+      const result = solrUrlService.parseSolrPath(pathStr);
+      
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('parseSolrUrl with edge cases', () => {
+    it('should handle invalid path in URL correctly', () => {
+      const solrReq = 'http://localhost:8983/invalid';
+      const result = solrUrlService.parseSolrUrl(solrReq);
+      
+      expect(result).toBeNull();
+    });
+
+    it('should handle URL without proper path components', () => {
+      const solrReq = 'http://localhost:8983/';
+      const result = solrUrlService.parseSolrUrl(solrReq);
+      
+      expect(result).toBeNull();
+    });
+  });
 });

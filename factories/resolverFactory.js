@@ -11,7 +11,9 @@ import DocResolver from '../services/docResolverSvc.js';
  */
 export function createResolver(config, searchEngine) {
   // Set search engine type in config
-  config.searchEngine = searchEngine;
+  if (config) {
+    config.searchEngine = searchEngine;
+  }
   
   // Create resolver instance
   const resolverInstance = new DocResolver(config);

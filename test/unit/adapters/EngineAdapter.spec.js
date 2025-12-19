@@ -16,4 +16,14 @@ describe('EngineAdapter', () => {
     })();
     expect(adapter.search).toBeInstanceOf(Function);
   });
+
+  it('should throw when search method is called on abstract class', () => {
+    const adapter = new (class extends EngineAdapter {
+      // Don't override search method to test abstract behavior
+    })();
+    
+    expect(async () => {
+      await adapter.search({ query: 'test' });
+    }).rejects.toThrow('Search method must be implemented by concrete adapter');
+  });
 });
