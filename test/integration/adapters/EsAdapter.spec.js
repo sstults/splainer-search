@@ -1,24 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { VectaraAdapter } from '../../../adapters/vectara/VectaraAdapter.js';
+import { EsAdapter } from '../../../adapters/elasticsearch/EsAdapter.js';
 import { Searcher } from '../../../core/Searcher.js';
 
-describe('VectaraAdapter Integration', () => {
+describe('EsAdapter Integration', () => {
   let adapter;
   
   beforeEach(() => {
-    adapter = new VectaraAdapter({
-      customerId: 'test-customer-id',
-      corpusId: 'test-corpus-id',
-      apiKey: 'test-api-key'
+    adapter = new EsAdapter({
+      host: 'http://localhost:9200',
+      index: 'test_index'
     });
   });
 
   describe('constructor', () => {
     it('should initialize with correct configuration', () => {
       expect(adapter.config).toEqual({
-        customerId: 'test-customer-id',
-        corpusId: 'test-corpus-id',
-        apiKey: 'test-api-key'
+        host: 'http://localhost:9200',
+        index: 'test_index'
       });
     });
   });
@@ -26,41 +24,43 @@ describe('VectaraAdapter Integration', () => {
   describe('search method', () => {
     it('should return expected search results structure', async () => {
       const searchParams = {
-        query: 'test query',
-        numResults: 10,
-        start: 0
+        q: 'test query',
+        size: 10,
+        from: 0
       };
       
       const result = await adapter.search(searchParams);
       
-      expect(result).toHaveProperty('results');
-      expect(result).toHaveProperty('total');
+      expect(result).toHaveProperty('hits');
+      expect(result).toHaveProperty('timed_out');
       expect(result).toHaveProperty('took');
+      expect(result.hits).toHaveProperty('hits');
+      expect(result.hits).toHaveProperty('total');
     });
 
     it('should handle different search parameters', async () => {
       const testParams = [
-        { query: 'simple query', numResults: 5, start: 0 },
-        { query: 'complex query with filters', numResults: 20, start: 10 },
-        { query: '', numResults: 100, start: 0 },
-        { query: 'query with special chars: + - && || ! ( ) { } [ ] ^ " ~ * ? : \\ /', numResults: 10, start: 0 }
+        { q: 'simple query', size: 5, from: 0 },
+        { q: 'complex query with filters', size: 20, from: 10 },
+        { q: '', size: 100, from: 0 },
+        { q: 'query with special chars: + - && || ! ( ) { } [ ] ^ " ~ * ? : \\ /', size: 10, from: 0 }
       ];
 
       for (const params of testParams) {
         const result = await adapter.search(params);
-        expect(result).toHaveProperty('results');
-        expect(result).toHaveProperty('total');
+        expect(result).toHaveProperty('hits');
+        expect(result).toHaveProperty('timed_out');
         expect(result).toHaveProperty('took');
       }
     });
 
     it('should maintain adapter state between searches', async () => {
-      const firstResult = await adapter.search({ query: 'first query' });
-      const secondResult = await adapter.search({ query: 'second query' });
+      const firstResult = await adapter.search({ q: 'first query' });
+      const secondResult = await adapter.search({ q: 'second query' });
       
       // Both should return valid results
-      expect(firstResult).toHaveProperty('results');
-      expect(secondResult).toHaveProperty('results');
+      expect(firstResult).toHaveProperty('hits');
+      expect(secondResult).toHaveProperty('hits');
     });
   });
 
@@ -69,30 +69,33 @@ describe('VectaraAdapter Integration', () => {
       const searcher = new Searcher(
         adapter,
         ['title', 'content'],
-        'https://api.vectara.io/v1/query',
-        { numResults: 10, start: 0 },
+        'http://localhost:9200/test_index/_search',
+        { size: 10, from: 0 },
         'test query',
         { transport: 'http' },
-        'vectara'
+        'elasticsearch'
       );
       
       // Mock the adapter search method to return consistent results
       const mockSearch = vi.spyOn(adapter, 'search');
       mockSearch.mockResolvedValue({
-        results: [
-          { id: '1', title: 'Test Document 1', content: 'This is test content 1' },
-          { id: '2', title: 'Test Document 2', content: 'This is test content 2' }
-        ],
-        total: 2,
+        hits: {
+          hits: [
+            { _id: '1', _source: { id: 1, title: 'Test Document 1', content: 'This is test content 1' } },
+            { _id: '2', _source: { id: 2, title: 'Test Document 2', content: 'This is test content 2' } }
+          ],
+          total: 2
+        },
+        timed_out: false,
         took: 5
       });
       
       const result = await searcher.search();
       
       expect(mockSearch).toHaveBeenCalledWith({
-        query: 'test query',
-        numResults: 10,
-        start: 0
+        q: 'test query',
+        size: 10,
+        from: 0
       });
       
       expect(result.docs).toHaveLength(2);

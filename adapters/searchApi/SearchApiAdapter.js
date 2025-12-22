@@ -8,23 +8,36 @@ export class SearchApiAdapter extends EngineAdapter {
 
   /**
    * Search method for Search API
-   * @param {string} queryText - Query text
-   * @param {Object} params - Search parameters
+   * @param {Object} searchParams - Search parameters
    * @returns {Object} Search results
    */
-  search(queryText, params) {
+  async search(searchParams) {
     // Create Search API search URL
     const searchUrl = `${this.config.url}/search`;
     
-    // Prepare search parameters
-    const searchParams = {
-      query: queryText,
-      ...params,
-      size: this.config.rows || 10
-    };
+    // Convert 'q' parameter to 'query' for Search API
+    const apiParams = { ...searchParams };
+    if (apiParams.q !== undefined) {
+      apiParams.query = apiParams.q;
+      delete apiParams.q;
+    }
     
     // Perform search using transport
-    return this.transport.get(searchUrl, searchParams);
+    let response = {};
+    if (this.transport && typeof this.transport.get === 'function') {
+      response = await this.transport.get(searchUrl, apiParams);
+    }
+    
+    // Transform response to match expected structure
+    return {
+      hits: response.hits || response.results || [],
+      total: response.total || response.hits?.length || 0,
+      took: response.took || 0,
+      docs: response.hits?.map(hit => ({
+        id: hit.id || hit._id,
+        ...hit
+      })) || []
+    };
   }
 
   /**
@@ -32,11 +45,20 @@ export class SearchApiAdapter extends EngineAdapter {
    * @param {string} id - Document ID
    * @returns {Object} Document
    */
-  getDoc(id) {
+  async getDoc(id) {
     // Create Search API document URL
     const docUrl = `${this.config.url}/documents/${id}`;
     
     // Perform document retrieval using transport
-    return this.transport.get(docUrl);
+    let response = {};
+    if (this.transport && typeof this.transport.get === 'function') {
+      response = await this.transport.get(docUrl);
+    }
+    
+    // Transform response to match expected structure
+    return {
+      id: response.id || response._id,
+      ...response
+    };
   }
 }

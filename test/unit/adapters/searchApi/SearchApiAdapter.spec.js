@@ -33,7 +33,10 @@ describe('SearchApiAdapter', () => {
     const adapter = new SearchApiAdapter({ url: 'http://api.example.com', rows: 20 });
     adapter.transport = mockTransport;
     
-    const result = adapter.search('test query', { filter: 'category:books' });
+    const result = adapter.search({
+      q: 'test query',
+      filter: 'category:books'
+    });
     
     expect(mockTransport.get).toHaveBeenCalledWith(
       'http://api.example.com/search',
