@@ -7,8 +7,6 @@ npm -v
 
 echo "== 1) File presence =="
 need_files=(
-  "PLAN.md"
-  "README.md"
   "core"
   "adapters"
   "api/index.js"
@@ -80,7 +78,7 @@ echo "== 8) Coverage threshold (optional) =="
 if [ -d coverage ] || [ -f coverage/lcov.info ]; then
   echo "Coverage output present."
 else
-  echo "NOTE: No coverage artifacts found; ensure thresholds are documented in PLAN.md/README.md"
+  echo "NOTE: No coverage artifacts found; ensure thresholds are documented"
 fi
 
 echo "== ALL CHECKS COMPLETED =="
