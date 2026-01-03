@@ -7,12 +7,12 @@ describe('bulkTransportFactory', function() {
   beforeEach(function() {
     // Create a mock transport object
     transport = {
-      get: jasmine.createSpy('get'),
-      post: jasmine.createSpy('post'),
-      put: jasmine.createSpy('put'),
-      delete: jasmine.createSpy('delete'),
-      jsonp: jasmine.createSpy('jsonp'),
-      query: jasmine.createSpy('query')
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn(),
+      delete: vi.fn(),
+      jsonp: vi.fn(),
+      query: vi.fn()
     };
 
     // Create the bulk transport
@@ -47,14 +47,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle GET operations', function(done) {
-    transport.get.and.returnValue(Promise.resolve({ data: 'get result' }));
+    transport.get.mockResolvedValue({ data: 'get result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'GET' },
       { url: '/api/test2', method: 'GET' }
     ])
     .then(function(results) {
-      expect(transport.get.calls.count()).toBe(2);
+      expect(transport.get).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -65,14 +65,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle POST operations', function(done) {
-    transport.post.and.returnValue(Promise.resolve({ data: 'post result' }));
+    transport.post.mockResolvedValue({ data: 'post result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'POST', payload: { key: 'value' } },
       { url: '/api/test2', method: 'POST', payload: { key: 'value2' } }
     ])
     .then(function(results) {
-      expect(transport.post.calls.count()).toBe(2);
+      expect(transport.post).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -83,14 +83,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle PUT operations', function(done) {
-    transport.put.and.returnValue(Promise.resolve({ data: 'put result' }));
+    transport.put.mockResolvedValue({ data: 'put result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'PUT', payload: { key: 'value' } },
       { url: '/api/test2', method: 'PUT', payload: { key: 'value2' } }
     ])
     .then(function(results) {
-      expect(transport.put.calls.count()).toBe(2);
+      expect(transport.put).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -101,14 +101,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle DELETE operations', function(done) {
-    transport.delete.and.returnValue(Promise.resolve({ data: 'delete result' }));
+    transport.delete.mockResolvedValue({ data: 'delete result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'DELETE' },
       { url: '/api/test2', method: 'DELETE' }
     ])
     .then(function(results) {
-      expect(transport.delete.calls.count()).toBe(2);
+      expect(transport.delete).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -119,14 +119,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle JSONP operations', function(done) {
-    transport.jsonp.and.returnValue(Promise.resolve({ data: 'jsonp result' }));
+    transport.jsonp.mockResolvedValue({ data: 'jsonp result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'JSONP' },
       { url: '/api/test2', method: 'JSONP' }
     ])
     .then(function(results) {
-      expect(transport.jsonp.calls.count()).toBe(2);
+      expect(transport.jsonp).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -137,14 +137,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle unknown operations with query method', function(done) {
-    transport.query.and.returnValue(Promise.resolve({ data: 'query result' }));
+    transport.query.mockResolvedValue({ data: 'query result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'UNKNOWN' },
       { url: '/api/test2', method: 'UNKNOWN' }
     ])
     .then(function(results) {
-      expect(transport.query.calls.count()).toBe(2);
+      expect(transport.query).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -155,14 +155,14 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle operations with headers', function(done) {
-    transport.get.and.returnValue(Promise.resolve({ data: 'get result' }));
+    transport.get.mockResolvedValue({ data: 'get result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'GET', headers: { 'Authorization': 'Bearer token1' } },
       { url: '/api/test2', method: 'GET', headers: { 'Authorization': 'Bearer token2' } }
     ])
     .then(function(results) {
-      expect(transport.get.calls.count()).toBe(2);
+      expect(transport.get).toHaveBeenCalledTimes(2);
       expect(results.length).toBe(2);
       done();
     })
@@ -173,16 +173,16 @@ describe('bulkTransportFactory', function() {
   });
 
   it('should handle mixed operation types', function(done) {
-    transport.get.and.returnValue(Promise.resolve({ data: 'get result' }));
-    transport.post.and.returnValue(Promise.resolve({ data: 'post result' }));
+    transport.get.mockResolvedValue({ data: 'get result' });
+    transport.post.mockResolvedValue({ data: 'post result' });
     
     bulkTransport.bulk([
       { url: '/api/test1', method: 'GET' },
       { url: '/api/test2', method: 'POST', payload: { key: 'value' } }
     ])
     .then(function(results) {
-      expect(transport.get.calls.count()).toBe(1);
-      expect(transport.post.calls.count()).toBe(1);
+      expect(transport.get).toHaveBeenCalledTimes(1);
+      expect(transport.post).toHaveBeenCalledTimes(1);
       expect(results.length).toBe(2);
       done();
     })

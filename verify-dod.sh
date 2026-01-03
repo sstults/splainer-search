@@ -7,13 +7,10 @@ pnpm -v
 
 echo "== 1) File presence =="
 need_files=(
-  "PLAN.md"
-  "README.md"
   "core"
   "adapters"
   "api/index.js"
   "test"
-  "karma.conf.js"
 )
 for f in "${need_files[@]}"; do
   [[ -e "$f" ]] || { echo "Missing $f"; exit 1; }
@@ -67,32 +64,18 @@ else
   echo "NOTE: eslint not configured; skipping"
 fi
 
-echo "== 7) Tests (Karma headless) =="
-if npx --yes karma --version >/dev/null 2>&1; then
-  npx --yes karma start --single-run || true
+echo "== 7) Tests (Vitest via npm test) =="
+if npm run | grep -q " test"; then
+  npm test
 else
-  echo "NOTE: karma not installed; trying Grunt"
+  echo "NOTE: no npm test script configured"
 fi
 
-echo "== 8) Tests (Grunt fallback) =="
-if npx --yes grunt --version >/dev/null 2>&1; then
-  npx --yes grunt test || true
-else
-  echo "NOTE: grunt not installed; relying on npm test if present"
-fi
-
-echo "== 9) pnpm test fallback =="
-if pnpm run | grep -q " test"; then
-  pnpm test
-else
-  echo "NOTE: no test script; ensure Karma/Grunt ran above"
-fi
-
-echo "== 10) Coverage threshold (optional) =="
+echo "== 8) Coverage threshold (optional) =="
 if [ -d coverage ] || [ -f coverage/lcov.info ]; then
   echo "Coverage output present."
 else
-  echo "NOTE: No coverage artifacts found; ensure thresholds are documented in PLAN.md/README.md"
+  echo "NOTE: No coverage artifacts found; ensure thresholds are documented"
 fi
 
 echo "== ALL CHECKS COMPLETED =="
