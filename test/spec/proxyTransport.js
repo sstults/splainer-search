@@ -1,115 +1,49 @@
 'use strict';
 
-/*global describe,beforeEach,inject,it,expect*/
-describe('Service: transport', function() {
-  // load the service's module
-  beforeEach(module('o19s.splainer-search'));
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { HttpProxyTransportFactory } from '../../src/factories/httpProxyTransportFactory.js';
+import { TransportFactory } from '../../src/factories/transportFactory.js';
 
-  var $httpBackend;
-  var $timeout;
-  var HttpGetTransportFactory;
-  
-  // instantiate service
-  var transportSvc;
+describe('HttpProxyTransportFactory', () => {
+  let ProxyTransport;
+  let BaseTransport;
 
-  beforeEach(inject(function (_HttpGetTransportFactory_) {
-    HttpGetTransportFactory = _HttpGetTransportFactory_;
-  }));
+  class FakeJsonpTransport {}
 
-  beforeEach(inject(function($injector) {
-    $httpBackend = $injector.get('$httpBackend');
-    $timeout = $injector.get('$timeout');
-  }));
-  
-  beforeEach(inject(function (_transportSvc_) {
-    transportSvc     = _transportSvc_;
-
-  }));
-
-  
-  
-
-  var mockResultsTemplate = {
-    hits: {
-      total: 2,
-      'max_score': 1.0,
-      hits: [
-        {
-        }
-      ]
-    }
-  };
-
-
-  it('ignores when a payload provided', function () {
-    var url = 'http://es.splainer-search.com/foods/tacos/_msearch';
-    var headers = {'header': 1};
-    var headersToReceive = {
-      'header':1,
-      'Accept':'application/json, text/plain, */*'
-    };
-    var getTransport = new HttpGetTransportFactory();
-    var payloadTemplate = {'test': 0};
-    var payload = structuredClone(payloadTemplate);
-    getTransport.query(url, payload, headers);
-    $httpBackend.expectGET(url,headersToReceive).respond(200, mockResultsTemplate);
-    $timeout.flush();
-    $httpBackend.flush();
-    $httpBackend.verifyNoOutstandingExpectation();
+  beforeEach(() => {
+    BaseTransport = TransportFactory();
+    ProxyTransport = HttpProxyTransportFactory(BaseTransport, FakeJsonpTransport);
   });
-  
-  it('can take options', function () {
-    var url = 'http://es.splainer-search.com/foods/tacos/_msearch';
-    var headers = {'header': 1};
-    var options = {option1: true, 'option2':'hello'};
-    var getTransport = new HttpGetTransportFactory(options);
-    var payloadTemplate = {'test': 0};
-    var payload = structuredClone(payloadTemplate);
-    getTransport.query(url, payload, headers);
-    expect(getTransport.options()).toEqual(options);
-    $httpBackend.expectGET(url).respond(200, mockResultsTemplate);
-    $timeout.flush();
-    $httpBackend.flush();
-    $httpBackend.verifyNoOutstandingExpectation();
-  });  
-  
-  it('A POST can be wrapped in a proxy', function () {
-    var url = 'http://es.splainer-search.com/foods/tacos/_search';
-    var options = {
-      apiMethod: 'POST',
-      proxyUrl: 'http://localhost/proxy?url='
-    };
-    var transport = transportSvc.getTransport(options);
-    
-    var headers = {'header': 1};
-    
-    var payloadTemplate = {'test': 0};
-    var payload = structuredClone(payloadTemplate);
+
+  it('proxies requests by prefixing the proxy url', () => {
+    const innerTransport = { query: vi.fn() };
+    const transport = new ProxyTransport({
+      proxyUrl: 'http://localhost/proxy/',
+      transport: innerTransport
+    });
+
+    const url = 'http://example.com/search';
+    const payload = { test: 1 };
+    const headers = { header: 1 };
+
     transport.query(url, payload, headers);
-    $httpBackend.expectPOST('http://localhost/proxy?url=' + url).respond(200, mockResultsTemplate);
-    $timeout.flush();
-    $httpBackend.flush();
-    $httpBackend.verifyNoOutstandingExpectation();
+
+    expect(innerTransport.query).toHaveBeenCalledWith(
+      'http://localhost/proxy/' + url,
+      payload,
+      headers
+    );
   });
-  
-  it('A GET can be wrapped in a proxy', function () {
-    var url = 'http://es.splainer-search.com/foods/tacos/_search';
-    var options = {
-      apiMethod: 'GET',
-      proxyUrl: 'http://localhost/proxy/'
-    };
-    var transport = transportSvc.getTransport(options);
-    
-    var headers = {'header': 1};
-    
-    var payloadTemplate = {'test': 0};
-    var payload = structuredClone(payloadTemplate);
-    transport.query(url, payload, headers);
-    $httpBackend.expectGET('http://localhost/proxy/' + url).respond(200, mockResultsTemplate);
-    $timeout.flush();
-    $httpBackend.flush();
-    $httpBackend.verifyNoOutstandingExpectation();
-  });  
 
+  it('throws when proxying a JSONP transport', () => {
+    const innerTransport = new FakeJsonpTransport();
+    const transport = new ProxyTransport({
+      proxyUrl: 'http://localhost/proxy/',
+      transport: innerTransport
+    });
 
+    expect(() => transport.query('http://example.com', {}, {})).toThrow(
+      'It does not make sense to proxy a JSONP connection, use GET instead.'
+    );
+  });
 });

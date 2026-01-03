@@ -1,85 +1,83 @@
-'use strict';
-
-window.parseUrlParams = function(queryString) {
+export function parseUrlParams(queryString) {
   if (queryString[0] === '?') {
     queryString = queryString.slice(1, queryString.length);
   }
-  var queryParams = queryString.split('&');
-  var parsedParams = {};
-  queryParams.forEach(function(queryParam) {
-    var qpSplit = queryParam.split(/=(.*)/);
-    var param = qpSplit[0];
-    var value = qpSplit[1];
-    if (!parsedParams.hasOwnProperty(param)) {
+  const queryParams = queryString.split('&');
+  const parsedParams = {};
+  queryParams.forEach((queryParam) => {
+    const qpSplit = queryParam.split(/=(.*)/);
+    const param = qpSplit[0];
+    const value = qpSplit[1];
+    if (!Object.hasOwn(parsedParams, param)) {
       parsedParams[param] = [];
     }
     parsedParams[param].push(value);
   });
   return parsedParams;
-};
+}
 
-window.urlHasBasicAuth = function() {
+export function urlHasBasicAuth() {
   return {
-    test: function(requestedUrl) {
+    test(requestedUrl) {
       try {
         const uri = new URL(requestedUrl);
-        if (uri.username !== '' && uri.password !== ''){
-          return true; 
+        if (uri.username !== '' && uri.password !== '') {
+          return true;
         }
-        else {
-          console.error('Expected username: ' + uri.username + ' and password: ' + uri.password + ' to both be embedded in url ' + requestedUrl);
-          return false;
-        }          
+        console.error(
+          `Expected username: ${uri.username} and password: ${uri.password} to both be embedded in url ${requestedUrl}`
+        );
+        return false;
       } catch (error) {
-        return false; // Invalid URL
-      }      
+        return false;
+      }
     }
   };
-};
+}
 
-window.urlHasNoBasicAuth = function() {
+export function urlHasNoBasicAuth() {
   return {
-    test: function(requestedUrl) {
+    test(requestedUrl) {
       try {
         const uri = new URL(requestedUrl);
-        if (uri.username === '' && uri.password === ''){
-          return true; 
+        if (uri.username === '' && uri.password === '') {
+          return true;
         }
-        else {
-          console.error('Expected username: ' + uri.username + ' and password: ' + uri.password + ' to both be missing from url ' + requestedUrl);
-          return false;
-        }          
+        console.error(
+          `Expected username: ${uri.username} and password: ${uri.password} to both be missing from url ${requestedUrl}`
+        );
+        return false;
       } catch (error) {
-        return false; // Invalid URL
-      }      
+        return false;
+      }
     }
   };
-};
+}
 
-window.arrayContains = function(list, value) {
-  var contains = false;
-  list.forEach(function(listValue) {
+export function arrayContains(list, value) {
+  let contains = false;
+  list.forEach((listValue) => {
     if (listValue === value) {
       contains = true;
     }
   });
   return contains;
-};
+}
 
-window.urlContainsParams = function(url, params) {
+export function urlContainsParams(url, params) {
   return {
-    test: function(requestedUrl) {
+    test(requestedUrl) {
       if (requestedUrl.indexOf(url) !== 0) {
         return false;
       }
-      var missingParam = false;
-      var urlEncodedArgs = requestedUrl.substr(url.length);
-      var parsedParams = parseUrlParams(urlEncodedArgs);
-      Object.entries(params).forEach(function([param, values]) {
+      let missingParam = false;
+      const urlEncodedArgs = requestedUrl.substr(url.length);
+      const parsedParams = parseUrlParams(urlEncodedArgs);
+      Object.entries(params).forEach(([param, values]) => {
         if (values instanceof Array) {
-          values.forEach(function(value) {
+          values.forEach((value) => {
             if (!arrayContains(parsedParams[param], value)) {
-              console.error('Expected param: ' + param + ' missing');
+              console.error(`Expected param: ${param} missing`);
               missingParam = true;
             }
           });
@@ -90,22 +88,22 @@ window.urlContainsParams = function(url, params) {
       return !missingParam;
     }
   };
-};
+}
 
-window.urlMissingParams = function(url, params) {
+export function urlMissingParams(url, params) {
   return {
-    test: function(requestedUrl) {
+    test(requestedUrl) {
       if (requestedUrl.indexOf(url) !== 0) {
         return false;
       }
-      var found = false;
-      var urlEncodedArgs = requestedUrl.substr(url.length);
-      var parsedParams = parseUrlParams(urlEncodedArgs);
-      Object.entries(params).forEach(function([param, values]) {
+      let found = false;
+      const urlEncodedArgs = requestedUrl.substr(url.length);
+      const parsedParams = parseUrlParams(urlEncodedArgs);
+      Object.entries(params).forEach(([param, values]) => {
         if (values instanceof Array) {
-          values.forEach(function(value) {
+          values.forEach((value) => {
             if (arrayContains(parsedParams[param], value)) {
-              console.error('Param: ' + param + ' should be missing, but found');
+              console.error(`Param: ${param} should be missing, but found`);
               found = true;
             }
           });
@@ -114,4 +112,4 @@ window.urlMissingParams = function(url, params) {
       return !found;
     }
   };
-};
+}

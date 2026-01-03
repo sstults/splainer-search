@@ -1,21 +1,34 @@
 'use strict';
 
-/*global describe,beforeEach,inject,it,expect*/
+import { beforeEach, describe, expect, it } from 'vitest';
+import { baseExplainSvc } from '../../src/services/baseExplainSvc.js';
+import { explainSvc } from '../../src/services/explainSvc.js';
+import { normalDocsSvc } from '../../src/services/normalDocSvc.js';
+import { queryExplainSvc } from '../../src/services/queryExplainSvc.js';
+import { simExplainSvc } from '../../src/services/simExplainSvc.js';
+import { vectorSvc } from '../../src/services/vectorSvc.js';
+import { mockExplain } from '../mock/mockExplain.js';
 
 describe('Service: normalDocsSvc', function () {
-
-  // load the service's module
-  beforeEach(module('o19s.splainer-search'));
+  const createExplainService = () => {
+    const vectorService = new vectorSvc();
+    const baseExplainService = new baseExplainSvc(vectorService);
+    const simExplainService = new simExplainSvc();
+    const queryExplainService = new queryExplainSvc(
+      baseExplainService,
+      vectorService,
+      simExplainService
+    );
+    return new explainSvc(baseExplainService, queryExplainService, simExplainService);
+  };
 
   /*jshint camelcase: false */
-  var normalDocsSvc = null;
-  var vectorSvc = null;
-  beforeEach(inject(function (_normalDocsSvc_, _vectorSvc_) {
-    normalDocsSvc = _normalDocsSvc_;
-    vectorSvc = _vectorSvc_;
-  }));
+  let normalDocsSvcInstance = null;
+  beforeEach(() => {
+    const explainService = createExplainService();
+    normalDocsSvcInstance = new normalDocsSvc(explainService);
+  });
 
-  /* global mockExplain */
   describe('attached url tests', function() {
     var solrDoc = null;
     var normalDoc = null;
@@ -35,7 +48,7 @@ describe('Service: normalDocsSvc', function () {
         explain: function() {return mockExplain;}
       };
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
     });
 
     it('requests url correctly', function() {
@@ -64,13 +77,13 @@ describe('Service: normalDocsSvc', function () {
 
     it('requests url correctly', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'int_field'};
-      normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.title).toEqual('1234');
     });
 
     it('gets back as sub a string', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'int_field', subs: ['int_field']};
-      normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs.int_field).toEqual('1234');
     });
 
@@ -89,7 +102,7 @@ describe('Service: normalDocsSvc', function () {
       explain: function() {return mockExplain;},
       highlight: function() {return null;} };
     var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
-    var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+    var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
     expect(normalDoc.subSnippets().another_field).toContain('&gt;');
     expect(normalDoc.subSnippets().another_field).toContain('&lt;');
   });
@@ -115,7 +128,7 @@ describe('Service: normalDocsSvc', function () {
     it('ignores highlights for title', function() {
       availableHighlight = 'something';
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.title).toEqual(solrDoc.title_field);
       expect(normalDoc.subs.another_field).toEqual(solrDoc.another_field);
       var snips = normalDoc.subSnippets('<b>', '</b>');
@@ -125,7 +138,7 @@ describe('Service: normalDocsSvc', function () {
     it('uses highlights for sub fileds', function() {
       availableHighlight = 'something';
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs.another_field).toEqual(solrDoc.another_field);
       expect(normalDoc.title).toEqual(solrDoc.title_field);
     });
@@ -134,7 +147,7 @@ describe('Service: normalDocsSvc', function () {
       availableHighlight = null;
       var anotherFieldValue =solrDoc.another_field;
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['another_field']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs.another_field).toEqual(anotherFieldValue);
     });
   });
@@ -182,7 +195,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('hot matches by max sorted by percentage', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
 
       var hmOutOf = normalDoc.hotMatchesOutOf(2.0);
       expect(hmOutOf.length).toBe(2);
@@ -195,15 +208,15 @@ describe('Service: normalDocsSvc', function () {
 
     it('uses stub if no explain returned', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDocNoExpl);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDocNoExpl);
       expect(normalDoc.explain().explanation()).toContain('no explain');
       expect(normalDoc.explain().contribution()).toBe(0.0);
     });
 
     it('decorates with external explain', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDocNoExpl);
-      var decoratedDoc = normalDocsSvc.explainDoc(normalDoc, basicExplain2);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDocNoExpl);
+      var decoratedDoc = normalDocsSvcInstance.explainDoc(normalDoc, basicExplain2);
       var hmOutOf = decoratedDoc.hotMatchesOutOf(1.0);
       expect(hmOutOf.length).toBe(1);
       expect(hmOutOf[0].description).toContain('order');
@@ -216,14 +229,14 @@ describe('Service: normalDocsSvc', function () {
     it('decorated doc same as original', function() {
       // we need these to be the same to preserve memory
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDocNoExpl);
-      var decoratedDoc = normalDocsSvc.explainDoc(normalDoc, basicExplain2);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDocNoExpl);
+      var decoratedDoc = normalDocsSvcInstance.explainDoc(normalDoc, basicExplain2);
       expect(decoratedDoc).toBe(normalDoc);
     });
 
     it('uses alt explain if available', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDocNoExpl, basicExplain2);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDocNoExpl, basicExplain2);
       var hmOutOf = normalDoc.hotMatchesOutOf(1.0);
       expect(hmOutOf.length).toBe(1);
       expect(hmOutOf[0].description).toContain('order');
@@ -235,7 +248,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('gets score', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.score()).toEqual(1.0);
     });
 
@@ -255,7 +268,7 @@ describe('Service: normalDocsSvc', function () {
         }
         return null;
       };
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(idVals.length).toBe(2); // 2 lookups
       expect(idVals[0]).toEqual(solrDoc.origin().custom_id_field);
       expect(idVals[1]).toEqual(solrDoc.origin().id);
@@ -298,7 +311,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('reads fields', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: '*'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(Object.keys(normalDoc.subs).length).toEqual(2);
       expect(normalDoc.id).toEqual(idFromSrc);
       expect(normalDoc.title).toEqual(titleFromSrc);
@@ -337,7 +350,7 @@ describe('Service: normalDocsSvc', function () {
       solrDoc['actor.name'] = 'Harrison Ford';
 
       var fieldSpec = {id: 'custom_id_field', title: null, subs: ['actor.name']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
 
       expect(normalDoc.getHighlightedTitle('', '')).toEqual(null);
     });
@@ -345,7 +358,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('captures sub values no highlights', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: '*'};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(Object.keys(normalDoc.subs).length).toEqual(3);
       expect(normalDoc.subs.sub1).toEqual('sub1_val');
       expect(normalDoc.subs.sub2).toEqual('sub2_val');
@@ -353,7 +366,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('captures function values as subs', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: ['sub2'], functions: ['fn:$fn']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(Object.keys(normalDoc.subs).length).toEqual(2);
       expect(normalDoc.subs.sub2).toEqual('sub2_val');
       expect(normalDoc.subs.fn).toEqual('2');
@@ -361,7 +374,7 @@ describe('Service: normalDocsSvc', function () {
 
     it('captures function values with wildcard subs', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: '*', functions: ['fn:$fn']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(Object.keys(normalDoc.subs).length).toEqual(3);
       expect(normalDoc.subs.sub1).toEqual('sub1_val');
       expect(normalDoc.subs.sub2).toEqual('sub2_val');
@@ -371,7 +384,7 @@ describe('Service: normalDocsSvc', function () {
     it('captures sub values w/ highlight', function() {
       var fieldSpec = {id: 'custom_id_field', title: 'title_field', subs: '*'};
       availableHighlights.sub1 = 'sub1_hl';
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(Object.keys(normalDoc.subs).length).toEqual(3);
       expect(normalDoc.subs.sub1).toEqual('sub1_val');
       expect(normalDoc.subs.sub2).toEqual('sub2_val');
@@ -404,11 +417,11 @@ describe('Service: normalDocsSvc', function () {
 
     it('captures sub values with dot notation', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['director.name']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs['director.name']).toEqual('Robert Clouse');
 
       fieldSpec = {id: 'id', title: 'title_field', subs: ['director.credit_id']};
-      normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs['director.credit_id']).toEqual('52fe44fac3a36847f80b56e7');
       expect(normalDoc.subs['director.name']).toBe(undefined);
 
@@ -419,7 +432,7 @@ describe('Service: normalDocsSvc', function () {
       solrDoc['genres'] =  [{ 'name': 'Action', 'id': 1 },{ 'name': 'Comedy', 'id': 2 }];
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['genres.name']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
 
       expect(normalDoc.subs['genres.name']).toEqual(['Action', 'Comedy']);
     });
@@ -429,7 +442,7 @@ describe('Service: normalDocsSvc', function () {
       solrDoc['nesting'] =  { 'genres': [ { 'name': 'Action', 'id': 1 },{ 'name': 'Comedy', 'id': 2 }] };
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['nesting.genres.name']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
 
       expect(normalDoc.subs['nesting.genres.name']).toEqual(['Action', 'Comedy']);
     });
@@ -439,7 +452,7 @@ describe('Service: normalDocsSvc', function () {
       solrDoc['actor.name'] = 'Harrison Ford';
 
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['actor.name']};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs['actor.name']).toEqual('Harrison Ford');
 
     });
@@ -467,10 +480,10 @@ describe('Service: normalDocsSvc', function () {
 
     it('handles passing options for an image', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['relative_image'], image: 'relative_image', image_options: {prefix: 'http://example.org/'}};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs['relative_image']).toEqual('/some/image.png');
       expect(normalDoc.image).toEqual('/some/image.png');
-      expect(normalDoc.hasImage()).toBeTrue();
+      expect(normalDoc.hasImage()).toBe(true);
       expect(normalDoc.image_options).toEqual({prefix: 'http://example.org/'});
 
 
@@ -478,11 +491,11 @@ describe('Service: normalDocsSvc', function () {
     
     it('handles passing options for a thumb', function() {
       var fieldSpec = {id: 'id', title: 'title_field', subs: ['relative_image'], thumb: 'relative_image', thumb_options: {prefix: 'http://example.org/thumbs/'}};
-      var normalDoc = normalDocsSvc.createNormalDoc(fieldSpec, solrDoc);
+      var normalDoc = normalDocsSvcInstance.createNormalDoc(fieldSpec, solrDoc);
       expect(normalDoc.subs['relative_image']).toEqual('/some/image.png');
       expect(normalDoc.thumb).toEqual('/some/image.png');
-      expect(normalDoc.hasImage()).toBeFalse();
-      expect(normalDoc.hasThumb()).toBeTrue();
+      expect(normalDoc.hasImage()).toBe(false);
+      expect(normalDoc.hasThumb()).toBe(true);
       expect(normalDoc.thumb_options).toEqual({prefix: 'http://example.org/thumbs/'});
 
 

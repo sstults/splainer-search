@@ -2,7 +2,7 @@
 
 // Test for Solr Explain Extractor Service using plain JavaScript
 import { describe, it, beforeEach, expect } from 'vitest';
-import { solrExplainExtractorSvc } from '../../services/solrExplainExtractorSvc.js';
+import { solrExplainExtractorSvc } from '../../src/services/solrExplainExtractorSvc.js';
 
 describe('Service: solrExplainExtractorSvc', () => {
   let solrExplainExtractorSvcInstance;
@@ -15,7 +15,7 @@ describe('Service: solrExplainExtractorSvc', () => {
     };
     
     // Create the service instance
-    solrExplainExtractorSvcInstance = solrExplainExtractorSvc(normalDocsSvcInstance);
+    solrExplainExtractorSvcInstance = new solrExplainExtractorSvc(normalDocsSvcInstance);
   });
 
   describe('getOverridingExplain', () => {
