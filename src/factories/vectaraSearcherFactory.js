@@ -1,8 +1,8 @@
 /**
  * Factory for creating Vectara searchers
  */
-import { VectaraAdapter } from '../../adapters/vectara/VectaraAdapter.js';
-import { Searcher } from '../../core/Searcher.js';
+import { VectaraAdapter } from '../adapters/vectara/VectaraAdapter.js';
+import { Searcher } from '../core/Searcher.js';
 
 /**
  * Create a vectara searcher

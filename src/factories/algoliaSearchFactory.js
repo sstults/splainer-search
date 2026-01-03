@@ -1,8 +1,8 @@
 /**
  * Factory for creating Algolia searchers
  */
-import { AlgoliaAdapter } from '../../adapters/algolia/AlgoliaAdapter.js';
-import { Searcher } from '../../core/Searcher.js';
+import { AlgoliaAdapter } from '../adapters/algolia/AlgoliaAdapter.js';
+import { Searcher } from '../core/Searcher.js';
 
 /**
  * Create an algolia searcher

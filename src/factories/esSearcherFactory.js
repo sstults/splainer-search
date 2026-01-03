@@ -1,8 +1,8 @@
 /**
  * Factory for creating Elasticsearch searchers
  */
-import { EsAdapter } from '../../adapters/elasticsearch/EsAdapter.js';
-import { Searcher } from '../../core/Searcher.js';
+import { EsAdapter } from '../adapters/elasticsearch/EsAdapter.js';
+import { Searcher } from '../core/Searcher.js';
 
 /**
  * Create an elasticsearch searcher

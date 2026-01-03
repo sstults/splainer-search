@@ -1,8 +1,8 @@
 /**
  * Factory for creating Solr searchers
  */
-import { SolrAdapter } from '../../adapters/solr/SolrAdapter.js';
-import { Searcher } from '../../core/Searcher.js';
+import { SolrAdapter } from '../adapters/solr/SolrAdapter.js';
+import { Searcher } from '../core/Searcher.js';
 
 /**
  * Create a solr searcher
