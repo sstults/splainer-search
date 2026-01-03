@@ -24,6 +24,10 @@ export class SearchApiAdapter extends EngineAdapter {
       apiParams.query = apiParams.q;
       delete apiParams.q;
     }
+
+    if (apiParams.size === undefined && this.config.rows !== undefined) {
+      apiParams.size = this.config.rows;
+    }
     
     // Perform search using transport
     let response = {};
