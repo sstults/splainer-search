@@ -37,19 +37,54 @@ export class Searcher {
   async search() {
     try {
       // Prepare search parameters
+      const queryKey = ['algolia', 'searchapi'].includes(this.searchEngine) ? 'query' : 'q';
       const searchParams = {
         ...this.params,
-        q: this.queryText
+        [queryKey]: this.queryText
       };
 
       // Delegate to adapter
       const results = await this.adapter.search(searchParams);
-      
+
+      const docsFromHits = (hits) => {
+        if (!Array.isArray(hits)) {
+          return [];
+        }
+        return hits.map((hit) => hit?._source || hit);
+      };
+
+      let docs = results.docs;
+      if (docs === undefined && Array.isArray(results.hits?.hits)) {
+        docs = docsFromHits(results.hits.hits);
+      }
+      if (docs === undefined && Array.isArray(results.hits)) {
+        docs = docsFromHits(results.hits);
+      }
+      if (docs === undefined && Array.isArray(results.results)) {
+        docs = docsFromHits(results.results);
+      }
+      if (docs === undefined) {
+        docs = [];
+      }
+
+      const total = results.total
+        ?? results.hits?.total?.value
+        ?? results.hits?.total
+        ?? results.nbHits
+        ?? docs.length;
+
+      const normalized = {
+        ...results,
+        docs,
+        total,
+        engine: this.searchEngine
+      };
+
       // Process results
-      this.docs = results.docs || [];
-      this.total = results.total || 0;
+      this.docs = docs;
+      this.total = total;
       
-      return results;
+      return normalized;
     } catch (error) {
       throw new Error(`Search failed: ${error.message}`);
     }

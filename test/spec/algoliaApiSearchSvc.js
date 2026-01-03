@@ -26,7 +26,7 @@ describe('Service: searchSvc: Algolia', function () {
     'page': 0,
     'hitsPerPage': 5
   };
-  var expectedParams = angular.copy(mockAlgoliaParams);
+  var expectedParams = structuredClone(mockAlgoliaParams);
   var mockQueryText = 'post';
   var mockFieldSpec = null;
   expectedParams.query = encodeURIComponent(mockQueryText);

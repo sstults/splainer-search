@@ -136,7 +136,7 @@ describe('Service: docResolverSvc', function () {
         .then(function() {
           expect(resolver.docs.length).toBe(2);
           var ids = [];
-          angular.forEach(resolver.docs, function(doc) {
+          resolver.docs.forEach(function(doc) {
             ids.push(doc.id);
           });
           expect(ids).toContain('doc2');
@@ -160,7 +160,7 @@ describe('Service: docResolverSvc', function () {
         .then(function() {
           expect(resolver.docs.length).toBe(3);
           var ids = [];
-          angular.forEach(resolver.docs, function(doc) {
+          resolver.docs.forEach(function(doc) {
             ids.push(doc.id);
           });
           expect(ids).toContain('doc3');
@@ -289,10 +289,10 @@ describe('Service: docResolverSvc', function () {
         resolver.fetchDocs()
           .then(function onDocsResolved() {
             var ids = [];
-            angular.forEach(resolver.docs, function(doc) {
+            resolver.docs.forEach(function(doc) {
               ids.push(doc.id);
             });
-            angular.forEach(lotsOfDocs, function(docId) {
+            lotsOfDocs.forEach(function(docId) {
               expect(ids).toContain(docId);
             });
           });
@@ -344,7 +344,7 @@ describe('Service: docResolverSvc', function () {
 
       var expectAllDocsPresent = function(resolver) {
         var ids = [];
-        angular.forEach(resolver.docs, function(doc) {
+        resolver.docs.forEach(function(doc) {
           ids.push(doc.id);
         });
         expect(ids).toContain('doc1');
