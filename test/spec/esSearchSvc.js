@@ -4,18 +4,18 @@
  */
 
 // Mock fetch implementation for HTTP requests
-const mockFetch = jest.fn();
+const mockFetch = vi.fn();
 
 // Mock the global fetch function
 global.fetch = mockFetch;
 
 // Mock the URL parsing functionality
-const mockParseUrl = jest.fn();
-const mockBuildUrl = jest.fn();
+const mockParseUrl = vi.fn();
+const mockBuildUrl = vi.fn();
 
 // Mock the fieldSpec service
 const mockFieldSpecSvc = {
-  createFieldSpec: jest.fn()
+  createFieldSpec: vi.fn()
 };
 
 // Mock the esUrlSvc
@@ -26,13 +26,7 @@ const mockEsUrlSvc = {
 
 // Mock the searchSvc
 const mockSearchSvc = {
-  createSearcher: jest.fn()
-};
-
-// Mock angular.fromJson (for parsing JSON)
-const angular = {
-  fromJson: JSON.parse,
-  equals: (a, b) => JSON.stringify(a) === JSON.stringify(b)
+  createSearcher: vi.fn()
 };
 
 // Mock data
@@ -69,7 +63,7 @@ const mockES7Results = {
 };
 
 const mockFieldSpec = {
-  fieldList: jest.fn(() => ['field', 'field1'])
+  fieldList: vi.fn(() => ['field', 'field1'])
 };
 
 const mockScriptedResults = {
@@ -252,7 +246,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
     };
     
     mockFieldSpec = {
-      fieldList: jest.fn(() => ['field', 'field1'])
+      fieldList: vi.fn(() => ['field', 'field1'])
     };
     
     // Mock fieldSpec service
@@ -279,13 +273,13 @@ describe('Service: searchSvc: ElasticSearch', () => {
       beforeEach(() => {
         // Mock the createSearcher function to return a searcher with our mock data
         searchSvc.createSearcher.mockReturnValue({
-          search: jest.fn().mockImplementation(() => {
+          search: vi.fn().mockImplementation(() => {
             // Mock successful search
             return Promise.resolve();
           }),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         });
         
         // Create searcher
@@ -308,7 +302,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         // Mock the search method to capture request data
-        const searchMock = jest.fn().mockImplementation((data) => {
+        const searchMock = vi.fn().mockImplementation((data) => {
           const requestData = JSON.parse(data);
           expect(requestData.size).toBe(10);
           return Promise.resolve(mockES7Results);
@@ -319,7 +313,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
           search: searchMock,
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         // Call search
@@ -336,7 +330,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         // Mock the search method to capture request data
-        const searchMock = jest.fn().mockImplementation((data) => {
+        const searchMock = vi.fn().mockImplementation((data) => {
           const requestData = JSON.parse(data);
           expect(requestData.size).toBe(20);
           return Promise.resolve(mockES7Results);
@@ -346,7 +340,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
           search: searchMock,
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         // Call search
@@ -362,7 +356,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
           json: () => Promise.resolve(mockES7Results)
         });
 
-        const searchMock = jest.fn().mockImplementation((data) => {
+        const searchMock = vi.fn().mockImplementation((data) => {
           const esQuery = JSON.parse(data);
           expect(esQuery.query.term.text).toBe(mockQueryText);
           return Promise.resolve(mockES7Results);
@@ -372,7 +366,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
           search: searchMock,
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -387,10 +381,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -407,10 +401,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -429,10 +423,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -449,10 +443,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -463,10 +457,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         mockFetch.mockRejectedValue(new Error('Network Error'));
         
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -494,10 +488,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
         });
 
         const mockSearcher = {
-          search: jest.fn().mockImplementation(() => Promise.resolve()),
+          search: vi.fn().mockImplementation(() => Promise.resolve()),
           docs: [],
           numFound: 0,
-          pager: jest.fn()
+          pager: vi.fn()
         };
         
         await mockSearcher.search();
@@ -509,10 +503,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('explain info', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -532,7 +526,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.hasOwnProperty('explain')).toBe(true);
         expect(esQuery.explain).toBe(true);
@@ -543,7 +537,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -561,10 +555,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -575,10 +569,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('parsedQueryDetails info', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -598,7 +592,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.hasOwnProperty('profile')).toBe(true);
         expect(esQuery.profile).toBe(true);
@@ -609,7 +603,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -627,10 +621,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -641,16 +635,16 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('url', () => {
     beforeEach(() => {
       mockFieldSpec = {
-        fieldList: jest.fn(() => ['id:_id', 'title'])
+        fieldList: vi.fn(() => ['id:_id', 'title'])
       };
       
       mockEsUrl = 'http://localhost:9200/tmdb/_search';
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -671,10 +665,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -685,14 +679,14 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('highlights', () => {
     beforeEach(() => {
       mockFieldSpec = {
-        fieldList: jest.fn(() => ['id:_id', 'title'])
+        fieldList: vi.fn(() => ['id:_id', 'title'])
       };
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -712,7 +706,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.hasOwnProperty('highlight')).toBe(true);
         // We can't easily test the exact structure without full implementation
@@ -723,7 +717,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -738,10 +732,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -766,7 +760,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.query.term.text).toBe(mockQueryText);
         return Promise.resolve(mockES7Results);
@@ -776,7 +770,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -799,7 +793,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.query.term.text).toBe('taco&burrito taco&burrito purina headphone purina');
         return Promise.resolve(mockES7Results);
@@ -809,7 +803,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -820,14 +814,14 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('paging', () => {
     beforeEach(() => {
       mockFieldSpec = {
-        fieldList: jest.fn(() => ['id:_id', 'title'])
+        fieldList: vi.fn(() => ['id:_id', 'title'])
       };
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -848,10 +842,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -862,10 +856,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('failures', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -907,10 +901,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -921,11 +915,11 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('explain other', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn(),
-        explainOther: jest.fn().mockImplementation(() => Promise.resolve())
+        pager: vi.fn(),
+        explainOther: vi.fn().mockImplementation(() => Promise.resolve())
       });
       
       searcher = searchSvc.createSearcher(
@@ -946,11 +940,11 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn(),
-        explainOther: jest.fn().mockImplementation(() => Promise.resolve())
+        pager: vi.fn(),
+        explainOther: vi.fn().mockImplementation(() => Promise.resolve())
       };
       
       await mockSearcher.explainOther('message:foo', mockFieldSpec);
@@ -961,10 +955,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('version', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -984,7 +978,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const jsonData = JSON.parse(data);
         expect(jsonData._source).toBeDefined();
         return Promise.resolve(mockES7Results);
@@ -994,7 +988,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -1005,10 +999,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('version 7', () => {
     beforeEach(() => {
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -1029,10 +1023,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -1050,10 +1044,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       };
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -1073,7 +1067,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         json: () => Promise.resolve(mockES7Results)
       });
 
-      const searchMock = jest.fn().mockImplementation((data) => {
+      const searchMock = vi.fn().mockImplementation((data) => {
         const esQuery = JSON.parse(data);
         expect(esQuery.id).toBe('tmdb-title-search-template');
         expect(esQuery.hasOwnProperty('highlight')).toBe(false);
@@ -1087,7 +1081,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
         search: searchMock,
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -1098,7 +1092,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('scripted fields', () => {
     beforeEach(() => {
       mockFieldSpec = {
-        fieldList: jest.fn(() => ['id:_id', 'title', 'vote_avg_times_two'])
+        fieldList: vi.fn(() => ['id:_id', 'title', 'vote_avg_times_two'])
       };
       
       const mockEsParams = {
@@ -1118,10 +1112,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       };
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -1142,10 +1136,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       };
       
       await mockSearcher.search();
@@ -1156,7 +1150,7 @@ describe('Service: searchSvc: ElasticSearch', () => {
   describe('rendering templates', () => {
     beforeEach(() => {
       mockFieldSpec = {
-        fieldList: jest.fn(() => ['id:_id', 'title', 'vote_avg_times_two'])
+        fieldList: vi.fn(() => ['id:_id', 'title', 'vote_avg_times_two'])
       };
       
       const mockTemplateQueryParams = {
@@ -1169,10 +1163,10 @@ describe('Service: searchSvc: ElasticSearch', () => {
       };
       
       searchSvc.createSearcher.mockReturnValue({
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn()
+        pager: vi.fn()
       });
       
       searcher = searchSvc.createSearcher(
@@ -1193,11 +1187,11 @@ describe('Service: searchSvc: ElasticSearch', () => {
       });
 
       const mockSearcher = {
-        search: jest.fn().mockImplementation(() => Promise.resolve()),
+        search: vi.fn().mockImplementation(() => Promise.resolve()),
         docs: [],
         numFound: 0,
-        pager: jest.fn(),
-        renderTemplate: jest.fn().mockImplementation(() => Promise.resolve())
+        pager: vi.fn(),
+        renderTemplate: vi.fn().mockImplementation(() => Promise.resolve())
       };
       
       await mockSearcher.renderTemplate();

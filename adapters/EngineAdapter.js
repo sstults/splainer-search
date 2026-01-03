@@ -5,10 +5,11 @@ export class EngineAdapter {
   /**
    * Create an EngineAdapter
    */
-  constructor() {
+  constructor(config) {
     if (this.constructor === EngineAdapter) {
       throw new Error('EngineAdapter is abstract and cannot be instantiated directly');
     }
+    this.config = config || {};
   }
 
   /**
