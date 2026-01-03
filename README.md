@@ -56,3 +56,10 @@ pnpm test
 
 For more detailed development, build, and testing instructions, see
 [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md).
+
+## Repository Structure
+
+The canonical source lives under `src/`, including `src/core`, `src/adapters`,
+`src/factories`, `src/services`, and `src/values`. The top-level `core/`,
+`adapters/`, `factories/`, `services/`, `values/`, and `api/` folders remain as
+thin re-export shims for backwards-compatible import paths.

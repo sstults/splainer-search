@@ -1,8 +1,8 @@
 /**
  * Factory for creating SearchAPI searchers
  */
-import { SearchApiAdapter } from '../../adapters/searchApi/SearchApiAdapter.js';
-import { Searcher } from '../../core/Searcher.js';
+import { SearchApiAdapter } from '../adapters/searchApi/SearchApiAdapter.js';
+import { Searcher } from '../core/Searcher.js';
 
 /**
  * Create a searchapi searcher

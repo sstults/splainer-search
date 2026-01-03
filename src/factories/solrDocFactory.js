@@ -1,7 +1,7 @@
 'use strict';
 
 /*jslint latedef:false*/
-import { Doc } from '../../core/Doc.js';
+import { Doc } from '../core/Doc.js';
 import { solrUrlSvc } from '../services/solrUrlSvc.js';
 import { copyObject } from '../services/objectUtils.js';
 

@@ -2,7 +2,7 @@
 
 /*jslint latedef:false*/
 
-import { Doc } from '../../core/Doc.js';
+import { Doc } from '../core/Doc.js';
 
 export function AlgoliaDocFactory(DocFactory) {
   const Doc = function(doc, options) {

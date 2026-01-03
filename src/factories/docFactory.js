@@ -1,7 +1,7 @@
 /**
  * Factory for creating docs
  */
-import { Doc } from '../../core/Doc.js';
+import { Doc } from '../core/Doc.js';
 
 /**
  * Create a doc instance
