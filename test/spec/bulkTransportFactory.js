@@ -1,11 +1,11 @@
-import { bulkTransportFactory } from '../../factories/bulkTransportFactory.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { bulkTransportFactory } from '../../src/factories/bulkTransportFactory.js';
 
-describe('bulkTransportFactory', function() {
-  var transport;
-  var bulkTransport;
+describe('bulkTransportFactory', () => {
+  let transport;
+  let bulkTransport;
 
-  beforeEach(function() {
-    // Create a mock transport object
+  beforeEach(() => {
     transport = {
       get: vi.fn(),
       post: vi.fn(),
@@ -15,180 +15,121 @@ describe('bulkTransportFactory', function() {
       query: vi.fn()
     };
 
-    // Create the bulk transport
     bulkTransport = new bulkTransportFactory()(transport);
   });
 
-  it('should create a bulk transport object', function() {
+  it('creates a bulk transport object', () => {
     expect(bulkTransport).toBeDefined();
     expect(bulkTransport.bulk).toBeDefined();
   });
 
-  it('should reject when operations is not an array', function(done) {
-    bulkTransport.bulk('not an array')
-      .then(function() {
-        fail('Should have rejected');
-      })
-      .catch(function(error) {
-        expect(error.message).toBe('Operations must be an array');
-        done();
-      });
+  it('rejects when operations is not an array', async () => {
+    await expect(bulkTransport.bulk('not an array')).rejects.toThrow(
+      'Operations must be an array'
+    );
   });
 
-  it('should reject when an operation does not have a url', function(done) {
-    bulkTransport.bulk([{ method: 'GET' }])
-      .then(function() {
-        fail('Should have rejected');
-      })
-      .catch(function(error) {
-        expect(error.message).toBe('Each operation must have a url');
-        done();
-      });
+  it('rejects when an operation does not have a url', async () => {
+    await expect(bulkTransport.bulk([{ method: 'GET' }])).rejects.toThrow(
+      'Each operation must have a url'
+    );
   });
 
-  it('should handle GET operations', function(done) {
+  it('handles GET operations', async () => {
     transport.get.mockResolvedValue({ data: 'get result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'GET' },
       { url: '/api/test2', method: 'GET' }
-    ])
-    .then(function(results) {
-      expect(transport.get).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.get).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle POST operations', function(done) {
+  it('handles POST operations', async () => {
     transport.post.mockResolvedValue({ data: 'post result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'POST', payload: { key: 'value' } },
       { url: '/api/test2', method: 'POST', payload: { key: 'value2' } }
-    ])
-    .then(function(results) {
-      expect(transport.post).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.post).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle PUT operations', function(done) {
+  it('handles PUT operations', async () => {
     transport.put.mockResolvedValue({ data: 'put result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'PUT', payload: { key: 'value' } },
       { url: '/api/test2', method: 'PUT', payload: { key: 'value2' } }
-    ])
-    .then(function(results) {
-      expect(transport.put).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.put).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle DELETE operations', function(done) {
+  it('handles DELETE operations', async () => {
     transport.delete.mockResolvedValue({ data: 'delete result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'DELETE' },
       { url: '/api/test2', method: 'DELETE' }
-    ])
-    .then(function(results) {
-      expect(transport.delete).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.delete).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle JSONP operations', function(done) {
+  it('handles JSONP operations', async () => {
     transport.jsonp.mockResolvedValue({ data: 'jsonp result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'JSONP' },
       { url: '/api/test2', method: 'JSONP' }
-    ])
-    .then(function(results) {
-      expect(transport.jsonp).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.jsonp).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle unknown operations with query method', function(done) {
+  it('handles unknown operations with query method', async () => {
     transport.query.mockResolvedValue({ data: 'query result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'UNKNOWN' },
       { url: '/api/test2', method: 'UNKNOWN' }
-    ])
-    .then(function(results) {
-      expect(transport.query).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.query).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle operations with headers', function(done) {
+  it('handles operations with headers', async () => {
     transport.get.mockResolvedValue({ data: 'get result' });
-    
-    bulkTransport.bulk([
-      { url: '/api/test1', method: 'GET', headers: { 'Authorization': 'Bearer token1' } },
-      { url: '/api/test2', method: 'GET', headers: { 'Authorization': 'Bearer token2' } }
-    ])
-    .then(function(results) {
-      expect(transport.get).toHaveBeenCalledTimes(2);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+
+    const results = await bulkTransport.bulk([
+      { url: '/api/test1', method: 'GET', headers: { Authorization: 'Bearer token1' } },
+      { url: '/api/test2', method: 'GET', headers: { Authorization: 'Bearer token2' } }
+    ]);
+
+    expect(transport.get).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(2);
   });
 
-  it('should handle mixed operation types', function(done) {
+  it('handles mixed operation types', async () => {
     transport.get.mockResolvedValue({ data: 'get result' });
     transport.post.mockResolvedValue({ data: 'post result' });
-    
-    bulkTransport.bulk([
+
+    const results = await bulkTransport.bulk([
       { url: '/api/test1', method: 'GET' },
       { url: '/api/test2', method: 'POST', payload: { key: 'value' } }
-    ])
-    .then(function(results) {
-      expect(transport.get).toHaveBeenCalledTimes(1);
-      expect(transport.post).toHaveBeenCalledTimes(1);
-      expect(results.length).toBe(2);
-      done();
-    })
-    .catch(function(error) {
-      fail('Should not have rejected: ' + error);
-      done();
-    });
+    ]);
+
+    expect(transport.get).toHaveBeenCalledTimes(1);
+    expect(transport.post).toHaveBeenCalledTimes(1);
+    expect(results).toHaveLength(2);
   });
 });

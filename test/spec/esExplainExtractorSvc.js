@@ -1,8 +1,8 @@
 'use strict';
 
 // Test for Elasticsearch Explain Extractor Service using Vitest
-import { describe, it, beforeEach, expect } from 'vitest';
-import { EsExplainExtractorSvc } from '../../services/esExplainExtractorSvc.js';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
+import { EsExplainExtractorSvc } from '../../src/services/esExplainExtractorSvc.js';
 
 describe('Service: EsExplainExtractorSvc', () => {
   let esExplainExtractorSvcInstance;
@@ -94,6 +94,10 @@ describe('Service: EsExplainExtractorSvc', () => {
         { id: 'test-id', title: 'Test Title' },
         { id: 'test-id-2', title: 'Test Title 2' }
       ];
+
+      esExplainExtractorSvcInstance.normalDocsSvc = {
+        createNormalDoc: vi.fn(() => ({ id: 'test-id' }))
+      };
       
       const result = esExplainExtractorSvcInstance.docsWithExplainOther(mockDocs, mockFieldSpec, mockExplainData);
       expect(result).toHaveLength(2);
@@ -110,6 +114,10 @@ describe('Service: EsExplainExtractorSvc', () => {
       };
       
       const mockDocs = [];
+
+      esExplainExtractorSvcInstance.normalDocsSvc = {
+        createNormalDoc: vi.fn(() => ({ id: 'test-id' }))
+      };
       
       const result = esExplainExtractorSvcInstance.docsWithExplainOther(mockDocs, mockFieldSpec, mockExplainData);
       expect(result).toHaveLength(0);

@@ -2,7 +2,7 @@
 
 // Import required modules
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { SettingsValidatorFactory } from '../../factories/settingsValidatorFactory.js';
+import { SettingsValidatorFactory } from '../../src/factories/settingsValidatorFactory.js';
 
 // Mock data and utilities
 const fullResponse = {

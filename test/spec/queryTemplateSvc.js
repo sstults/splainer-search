@@ -1,13 +1,14 @@
 'use strict';
-/*global describe,beforeEach,inject,it,expect*/
+
+import { beforeEach, describe, expect, it } from 'vitest';
+import { queryTemplateSvc } from '../../src/services/queryTemplateSvc.js';
+
 describe('Service: queryTemplateSvc', function () {
+  let queryTemplateSvcInstance = null;
 
-  beforeEach(module('o19s.splainer-search'));
-
-  var queryTemplateSvc = null;
-  beforeEach(inject(function (_queryTemplateSvc_) {
-    queryTemplateSvc = _queryTemplateSvc_;
-  }));
+  beforeEach(() => {
+    queryTemplateSvcInstance = new queryTemplateSvc();
+  });
 
   describe('parse query template', function() {
     it('parses solr style GET params correctly', function() {
@@ -19,7 +20,7 @@ describe('Service: queryTemplateSvc', function () {
       
       template = JSON.stringify(template);
       
-      var replaced = queryTemplateSvc.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
+      var replaced = queryTemplateSvcInstance.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
       
       replaced = JSON.parse(replaced);
       
@@ -62,7 +63,7 @@ describe('Service: queryTemplateSvc', function () {
         ]
       };
       
-      var replaced = queryTemplateSvc.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
+      var replaced = queryTemplateSvcInstance.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
       
       var expectedReplaced = {
         'query': [
@@ -99,7 +100,7 @@ describe('Service: queryTemplateSvc', function () {
           'docs': ['#$qOption.complexDoc##', 'doc2', 'doc3']
         }
       };
-      const replaced = queryTemplateSvc.hydrate(template, queryText, { qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
+      const replaced = queryTemplateSvcInstance.hydrate(template, queryText, { qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
       var expectedReplaced = {
         query: {
           query: 'test query',
@@ -132,7 +133,7 @@ describe('Service: queryTemplateSvc', function () {
         }
       };
 
-      var replaced = queryTemplateSvc.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
+      var replaced = queryTemplateSvcInstance.hydrate(template, queryText, {qOption: qOption, encodeURI: false, defaultKw: '\\"\\"'});
 
       var expectedReplaced = {
         'query': {
@@ -160,7 +161,7 @@ describe('Service: queryTemplateSvc', function () {
 
       template = JSON.stringify(template);
 
-      var replaced = queryTemplateSvc.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
+      var replaced = queryTemplateSvcInstance.hydrate(template, queryText, {encodeURI: false, defaultKw: '\\"\\"'});
 
       replaced = JSON.parse(replaced);
 

@@ -2,15 +2,33 @@
 
 import { normalDocsSvc } from './normalDocSvc.js';
 import { explainSvc } from './explainSvc.js';
+import { baseExplainSvc } from './baseExplainSvc.js';
 import { fieldSpecSvc } from './fieldSpecSvc.js';
+import { queryExplainSvc } from './queryExplainSvc.js';
+import { simExplainSvc } from './simExplainSvc.js';
+import { vectorSvc } from './vectorSvc.js';
 
 /**
  * Service for extracting explain information from Elasticsearch documents
  */
 export class EsExplainExtractorSvc {
   constructor() {
-    this.normalDocsSvc = normalDocsSvc(explainSvc);
-    this.fieldSpecSvc = fieldSpecSvc();
+    const vectorService = new vectorSvc();
+    const baseExplainService = new baseExplainSvc(vectorService);
+    const simExplainService = new simExplainSvc();
+    const queryExplainService = new queryExplainSvc(
+      baseExplainService,
+      vectorService,
+      simExplainService
+    );
+    const explainService = new explainSvc(
+      baseExplainService,
+      queryExplainService,
+      simExplainService
+    );
+
+    this.normalDocsSvc = new normalDocsSvc(explainService);
+    this.fieldSpecSvc = new fieldSpecSvc();
   }
 
   /**

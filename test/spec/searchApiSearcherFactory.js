@@ -3,8 +3,7 @@
  * This tests that the SearchApiSearcherFactory properly sets up transport
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createSearchApiSearcher } from '../../factories/searchApiSearcherFactory.js';
-import { SearchApiAdapter } from '../../adapters/searchApi/SearchApiAdapter.js';
+import { createSearchApiSearcher } from '../../src/factories/searchApiSearcherFactory.js';
 
 describe('Factory: searchApiSearcherFactory', () => {
   let mockTransport;
@@ -48,9 +47,10 @@ describe('Factory: searchApiSearcherFactory', () => {
 
     // Create searcher
     searcher = createSearchApiSearcher(mockConfig);
+    searcher.params = {};
+    searcher.queryText = 'test query';
     
     // Mock the adapter search method to call transport
-    const originalSearch = searcher.adapter.search;
     searcher.adapter.search = vi.fn().mockImplementation(async (params) => {
       const searchUrl = `${mockConfig.url}/search`;
       return searcher.adapter.transport.get(searchUrl, params);
@@ -75,7 +75,6 @@ describe('Factory: searchApiSearcherFactory', () => {
     searcher = createSearchApiSearcher(mockConfig);
     
     // Mock the adapter getDoc method to call transport
-    const originalGetDoc = searcher.adapter.getDoc;
     searcher.adapter.getDoc = vi.fn().mockImplementation(async (id) => {
       const docUrl = `${mockConfig.url}/documents/${id}`;
       return searcher.adapter.transport.get(docUrl);

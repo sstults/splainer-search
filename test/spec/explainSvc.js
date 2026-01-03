@@ -1,32 +1,48 @@
 'use strict';
 
-/*global describe,beforeEach,inject,it,expect*/
+import { beforeEach, describe, expect, it } from 'vitest';
+import { baseExplainSvc } from '../../src/services/baseExplainSvc.js';
+import { explainSvc } from '../../src/services/explainSvc.js';
+import { queryExplainSvc } from '../../src/services/queryExplainSvc.js';
+import { simExplainSvc } from '../../src/services/simExplainSvc.js';
+import { vectorSvc } from '../../src/services/vectorSvc.js';
+import { bigHonkinExplain } from '../mock/bigHonkinExplain.js';
+import { mockExplain } from '../mock/mockExplain.js';
+
 describe('Service: explainSvc', function () {
+  let explainSvcInstance = null;
 
-  // load the service's module
-  beforeEach(module('o19s.splainer-search'));
+  beforeEach(() => {
+    const vectorService = new vectorSvc();
+    const baseExplainService = new baseExplainSvc(vectorService);
+    const simExplainService = new simExplainSvc();
+    const queryExplainService = new queryExplainSvc(
+      baseExplainService,
+      vectorService,
+      simExplainService
+    );
+    explainSvcInstance = new explainSvc(
+      baseExplainService,
+      queryExplainService,
+      simExplainService
+    );
+  });
 
-  var explainSvc = null;
-  beforeEach(inject(function (_explainSvc_) {
-    explainSvc = _explainSvc_;
-  }));
-
-  /* global mockExplain */
   it('parses mockExplain', function() {
-    explainSvc.createExplain(mockExplain);
+    explainSvcInstance.createExplain(mockExplain);
   });
 
   it('returns null/empty explain', function() {
-    var exp = explainSvc.createExplain(null);
-    expect(exp.influencers.length).toEqual(0);
+    var exp = explainSvcInstance.createExplain(null);
+    expect(exp.influencers().length).toEqual(0);
     expect(exp.contribution()).toEqual(0);
     expect(exp.explanation()).toContain('no explain for doc');
   });
 
   it('handles an empty explain hash', function() {
     var emptyExplain = {};
-    var exp = explainSvc.createExplain(emptyExplain);
-    expect(exp.influencers.length).toEqual(0);
+    var exp = explainSvcInstance.createExplain(emptyExplain);
+    expect(exp.influencers().length).toEqual(0);
     expect(exp.contribution()).toEqual(0);
     expect(exp.explanation()).toContain('no explain for doc');
   });
@@ -35,9 +51,8 @@ describe('Service: explainSvc', function () {
     var d = new Date();
     var start = d.getTime();
 
-    /*global bigHonkinExplain*/
     for (var i = 0; i <10; i++) {
-      var simplerExplain = explainSvc.createExplain(bigHonkinExplain);
+      var simplerExplain = explainSvcInstance.createExplain(bigHonkinExplain);
       simplerExplain.vectorize();
       simplerExplain.matchDetails();
     }
@@ -75,7 +90,7 @@ describe('Service: explainSvc', function () {
         }
       ]
     };
-    var simplerExplain = explainSvc.createExplain(sumExplain);
+    var simplerExplain = explainSvcInstance.createExplain(sumExplain);
     var infl = simplerExplain.influencers();
     expect(infl.length).toEqual(3);
     expect(infl[0].description).toEqual('part 3 is 0.7');
@@ -122,7 +137,7 @@ describe('Service: explainSvc', function () {
         }
       ]
     };
-    var simplerExplain = explainSvc.createExplain(sumOfSumExplain);
+    var simplerExplain = explainSvcInstance.createExplain(sumOfSumExplain);
     var infl = simplerExplain.influencers();
     expect(infl.length).toEqual(4);
     expect(infl[0].description).toEqual('part 3 is 0.7');
@@ -150,7 +165,7 @@ describe('Service: explainSvc', function () {
           'description': 'maxBoost'
         }]
       };
-      var simplerExplain = explainSvc.createExplain(minOfExpl);
+      var simplerExplain = explainSvcInstance.createExplain(minOfExpl);
       // the minof is ignored, as it has one child we jump straight to the function query
       var infl = simplerExplain.influencers();
 
@@ -164,7 +179,7 @@ describe('Service: explainSvc', function () {
       expect(Object.keys(matches.vecObj)[0]).toContain('exp'); // get down to just the function query
     });
 
-    xit('ignores meaningless queryBoost', function() {
+    it.skip('ignores meaningless queryBoost', function() {
       /* This test is currently ignored, however I'm debating what to do
        * with this scenario. The queryBoost of 1 is only meaningless if there's a function
        * score query with product of.
@@ -198,7 +213,7 @@ describe('Service: explainSvc', function () {
 
         ]
       };
-      var simplerExplain = explainSvc.createExplain(funcScoreQuery);
+      var simplerExplain = explainSvcInstance.createExplain(funcScoreQuery);
 
       var infl = simplerExplain.influencers();
       expect(infl.length).toEqual(1);
@@ -246,7 +261,7 @@ describe('Service: explainSvc', function () {
     };
 
     it('vectorize empty', function() {
-      var expl = explainSvc.createExplain(weirdExplain);
+      var expl = explainSvcInstance.createExplain(weirdExplain);
       expect(expl.vectorize().get('Weird thing matched')).toEqual(1.5);
       console.log(expl.toStr());
     });
@@ -340,7 +355,7 @@ describe('Service: explainSvc', function () {
           }
         ]
       };
-      var multiplicativeExplain = explainSvc.createExplain(multiplicativeExpl);
+      var multiplicativeExplain = explainSvcInstance.createExplain(multiplicativeExpl);
       var infl = multiplicativeExplain.influencers();
 
       //this explain has two factors so we expect these to be the keys of the explanation
@@ -413,7 +428,7 @@ describe('Service: explainSvc', function () {
           }
         ]
       };
-      var multiplicativeExplain = explainSvc.createExplain(multiplicativeExpl);
+      var multiplicativeExplain = explainSvcInstance.createExplain(multiplicativeExpl);
       var infl = multiplicativeExplain.influencers();
 
       //this explain has two factors so we expect these to be the keys of the explanation
