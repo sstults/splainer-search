@@ -52,7 +52,7 @@ pnpm run lint:fix
 pnpm run build
 ```
 
-The build uses `tsup` to generate ESM/CJS bundles and type definitions.
+The build uses `esbuild` to generate the CJS bundle.
 
 ## Testing Notes
 

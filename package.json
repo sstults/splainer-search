@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsup module.js --format esm,cjs --dts --sourcemap",
+    "build": "esbuild module.js --bundle --format=cjs --platform=node --outfile=module.cjs --sourcemap",
     "test": "vitest run",
     "dev:test": "vitest",
     "lint": "eslint . --ext .js",
@@ -28,6 +28,7 @@
   "license": "MIT",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.0.16",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "testcontainers": "^11.10.0",
