@@ -3,7 +3,7 @@ set -eo pipefail
 
 echo "== 0) Environment =="
 node -v
-npm -v
+pnpm -v
 
 echo "== 1) File presence =="
 need_files=(
@@ -57,11 +57,8 @@ if [ -d adapters ]; then
 fi
 
 echo "== 5) Install deps =="
-if [ -f pnpm-lock.yaml ]; then
-  command -v pnpm >/dev/null && pnpm i --frozen-lockfile || npm ci
-else
-  npm ci
-fi
+command -v pnpm >/dev/null || { echo "pnpm is required"; exit 1; }
+pnpm i --frozen-lockfile
 
 echo "== 6) Lint =="
 if npx --yes eslint -v >/dev/null 2>&1; then
@@ -84,11 +81,11 @@ else
   echo "NOTE: grunt not installed; relying on npm test if present"
 fi
 
-echo "== 9) npm test fallback =="
-if npm run | grep -q " test"; then
-  npm test
+echo "== 9) pnpm test fallback =="
+if pnpm run | grep -q " test"; then
+  pnpm test
 else
-  echo "NOTE: no npm test script; ensure Karma/Grunt ran above"
+  echo "NOTE: no test script; ensure Karma/Grunt ran above"
 fi
 
 echo "== 10) Coverage threshold (optional) =="
