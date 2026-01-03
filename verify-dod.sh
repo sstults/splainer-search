@@ -3,7 +3,7 @@ set -eo pipefail
 
 echo "== 0) Environment =="
 node -v
-npm -v
+pnpm -v
 
 echo "== 1) File presence =="
 need_files=(
@@ -54,11 +54,8 @@ if [ -d adapters ]; then
 fi
 
 echo "== 5) Install deps =="
-if [ -f pnpm-lock.yaml ]; then
-  command -v pnpm >/dev/null && pnpm i --frozen-lockfile || npm ci
-else
-  npm ci
-fi
+command -v pnpm >/dev/null || { echo "pnpm is required"; exit 1; }
+pnpm i --frozen-lockfile
 
 echo "== 6) Lint =="
 if npx --yes eslint -v >/dev/null 2>&1; then
