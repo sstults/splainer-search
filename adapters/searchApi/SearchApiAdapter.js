@@ -2,8 +2,7 @@ import { EngineAdapter } from '../EngineAdapter.js';
 
 export class SearchApiAdapter extends EngineAdapter {
   constructor(config) {
-    super();
-    this.config = config || {};
+    super(config);
   }
 
   /**
@@ -13,10 +12,14 @@ export class SearchApiAdapter extends EngineAdapter {
    */
   async search(searchParams) {
     // Create Search API search URL
-    const searchUrl = `${this.config.url}/search`;
+    const baseUrl = this.config.url || this.config.baseUrl || '';
+    const searchUrl = baseUrl.endsWith('/search') ? baseUrl : `${baseUrl}/search`;
     
     // Convert 'q' parameter to 'query' for Search API
     const apiParams = { ...searchParams };
+    if (apiParams.size === undefined && this.config.rows !== undefined) {
+      apiParams.size = this.config.rows;
+    }
     if (apiParams.q !== undefined) {
       apiParams.query = apiParams.q;
       delete apiParams.q;
@@ -29,7 +32,7 @@ export class SearchApiAdapter extends EngineAdapter {
     // Perform search using transport
     let response = {};
     if (this.transport && typeof this.transport.get === 'function') {
-      response = (await this.transport.get(searchUrl, apiParams)) ?? {};
+      response = await this.transport.get(searchUrl, apiParams) || {};
     }
     
     // Transform response to match expected structure
@@ -51,12 +54,14 @@ export class SearchApiAdapter extends EngineAdapter {
    */
   async getDoc(id) {
     // Create Search API document URL
-    const docUrl = `${this.config.url}/documents/${id}`;
+    const baseUrl = this.config.url || this.config.baseUrl || '';
+    const rootUrl = baseUrl.endsWith('/search') ? baseUrl.slice(0, -'/search'.length) : baseUrl;
+    const docUrl = `${rootUrl}/documents/${id}`;
     
     // Perform document retrieval using transport
     let response = {};
     if (this.transport && typeof this.transport.get === 'function') {
-      response = (await this.transport.get(docUrl)) ?? {};
+      response = await this.transport.get(docUrl) || {};
     }
     
     // Transform response to match expected structure

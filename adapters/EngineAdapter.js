@@ -9,10 +9,7 @@ export class EngineAdapter {
     if (this.constructor === EngineAdapter) {
       throw new Error('EngineAdapter is abstract and cannot be instantiated directly');
     }
-
-    if (config !== undefined) {
-      this.config = config;
-    }
+    this.config = config || {};
   }
 
   /**

@@ -37,8 +37,10 @@ export class Searcher {
   async search() {
     try {
       // Prepare search parameters
+      const queryKey = ['algolia', 'searchapi'].includes(this.searchEngine) ? 'query' : 'q';
       const searchParams = {
-        ...this.params
+        ...this.params,
+        [queryKey]: this.queryText
       };
 
       if (this.searchEngine === 'algolia' || this.searchEngine === 'searchapi') {
@@ -49,11 +51,44 @@ export class Searcher {
 
       // Delegate to adapter
       const results = await this.adapter.search(searchParams);
-      
+
+      const docsFromHits = (hits) => {
+        if (!Array.isArray(hits)) {
+          return [];
+        }
+        return hits.map((hit) => hit?._source || hit);
+      };
+
+      let docs = results.docs;
+      if (docs === undefined && Array.isArray(results.hits?.hits)) {
+        docs = docsFromHits(results.hits.hits);
+      }
+      if (docs === undefined && Array.isArray(results.hits)) {
+        docs = docsFromHits(results.hits);
+      }
+      if (docs === undefined && Array.isArray(results.results)) {
+        docs = docsFromHits(results.results);
+      }
+      if (docs === undefined) {
+        docs = [];
+      }
+
+      const total = results.total
+        ?? results.hits?.total?.value
+        ?? results.hits?.total
+        ?? results.nbHits
+        ?? docs.length;
+
+      const normalized = {
+        ...results,
+        docs,
+        total,
+        engine: this.searchEngine
+      };
+
       // Process results
-      const normalized = this.normalizeResults(results);
-      this.docs = normalized.docs;
-      this.total = normalized.total;
+      this.docs = docs;
+      this.total = total;
       
       return normalized;
     } catch (error) {

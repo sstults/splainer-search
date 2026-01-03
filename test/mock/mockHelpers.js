@@ -6,7 +6,7 @@ window.parseUrlParams = function(queryString) {
   }
   var queryParams = queryString.split('&');
   var parsedParams = {};
-  angular.forEach(queryParams, function(queryParam) {
+  queryParams.forEach(function(queryParam) {
     var qpSplit = queryParam.split(/=(.*)/);
     var param = qpSplit[0];
     var value = qpSplit[1];
@@ -58,7 +58,7 @@ window.urlHasNoBasicAuth = function() {
 
 window.arrayContains = function(list, value) {
   var contains = false;
-  angular.forEach(list, function(listValue) {
+  list.forEach(function(listValue) {
     if (listValue === value) {
       contains = true;
     }
@@ -75,9 +75,9 @@ window.urlContainsParams = function(url, params) {
       var missingParam = false;
       var urlEncodedArgs = requestedUrl.substr(url.length);
       var parsedParams = parseUrlParams(urlEncodedArgs);
-      angular.forEach(params, function(values, param) {
+      Object.entries(params).forEach(function([param, values]) {
         if (values instanceof Array) {
-          angular.forEach(values, function(value) {
+          values.forEach(function(value) {
             if (!arrayContains(parsedParams[param], value)) {
               console.error('Expected param: ' + param + ' missing');
               missingParam = true;
@@ -101,9 +101,9 @@ window.urlMissingParams = function(url, params) {
       var found = false;
       var urlEncodedArgs = requestedUrl.substr(url.length);
       var parsedParams = parseUrlParams(urlEncodedArgs);
-      angular.forEach(params, function(values, param) {
+      Object.entries(params).forEach(function([param, values]) {
         if (values instanceof Array) {
-          angular.forEach(values, function(value) {
+          values.forEach(function(value) {
             if (arrayContains(parsedParams[param], value)) {
               console.error('Param: ' + param + ' should be missing, but found');
               found = true;

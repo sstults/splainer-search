@@ -9,8 +9,7 @@ export class SolrAdapter extends EngineAdapter {
    * @param {Object} config - Search configuration
    */
   constructor(config) {
-    super();
-    this.config = config || {};
+    super(config);
   }
 
   /**
