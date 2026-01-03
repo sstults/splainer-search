@@ -43,8 +43,6 @@
     "values/",
     "core/",
     "adapters/",
-    "net/",
-    "util/",
     "module.js"
   ],
   "dependencies": {
