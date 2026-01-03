@@ -1,3 +1,1 @@
-export const defaultVectaraConfig = {
-  apiMethod:    'POST',
-};
+export * from '../src/values/defaultVectaraConfig.js';

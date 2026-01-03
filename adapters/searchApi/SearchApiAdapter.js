@@ -21,11 +21,15 @@ export class SearchApiAdapter extends EngineAdapter {
       apiParams.query = apiParams.q;
       delete apiParams.q;
     }
+
+    if (apiParams.size === undefined && this.config.rows !== undefined) {
+      apiParams.size = this.config.rows;
+    }
     
     // Perform search using transport
     let response = {};
     if (this.transport && typeof this.transport.get === 'function') {
-      response = await this.transport.get(searchUrl, apiParams);
+      response = (await this.transport.get(searchUrl, apiParams)) ?? {};
     }
     
     // Transform response to match expected structure
@@ -52,7 +56,7 @@ export class SearchApiAdapter extends EngineAdapter {
     // Perform document retrieval using transport
     let response = {};
     if (this.transport && typeof this.transport.get === 'function') {
-      response = await this.transport.get(docUrl);
+      response = (await this.transport.get(docUrl)) ?? {};
     }
     
     // Transform response to match expected structure

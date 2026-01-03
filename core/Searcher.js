@@ -38,21 +38,69 @@ export class Searcher {
     try {
       // Prepare search parameters
       const searchParams = {
-        ...this.params,
-        q: this.queryText
+        ...this.params
       };
+
+      if (this.searchEngine === 'algolia' || this.searchEngine === 'searchapi') {
+        searchParams.query = this.queryText;
+      } else {
+        searchParams.q = this.queryText;
+      }
 
       // Delegate to adapter
       const results = await this.adapter.search(searchParams);
       
       // Process results
-      this.docs = results.docs || [];
-      this.total = results.total || 0;
+      const normalized = this.normalizeResults(results);
+      this.docs = normalized.docs;
+      this.total = normalized.total;
       
-      return results;
+      return normalized;
     } catch (error) {
       throw new Error(`Search failed: ${error.message}`);
     }
+  }
+
+  normalizeResults(results) {
+    const normalizedResults = {
+      ...results
+    };
+
+    if (!normalizedResults.engine) {
+      normalizedResults.engine = this.searchEngine;
+    }
+
+    let docs = normalizedResults.docs;
+    if (!docs) {
+      const hits = normalizedResults.hits;
+      if (Array.isArray(hits)) {
+        docs = hits.map(hit => (hit._source ? { id: hit._id, ...hit._source } : hit));
+      } else if (hits && Array.isArray(hits.hits)) {
+        docs = hits.hits.map(hit => (hit._source ? { id: hit._id, ...hit._source } : hit));
+      } else {
+        docs = [];
+      }
+    }
+
+    let total = normalizedResults.total;
+    if (total === undefined) {
+      if (normalizedResults.nbHits !== undefined) {
+        total = normalizedResults.nbHits;
+      } else if (normalizedResults.hits?.total !== undefined) {
+        total = typeof normalizedResults.hits.total === 'number'
+          ? normalizedResults.hits.total
+          : normalizedResults.hits.total?.value;
+      } else if (Array.isArray(normalizedResults.hits)) {
+        total = normalizedResults.hits.length;
+      } else {
+        total = docs.length;
+      }
+    }
+
+    normalizedResults.docs = docs;
+    normalizedResults.total = total ?? 0;
+
+    return normalizedResults;
   }
 
   /**

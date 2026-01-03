@@ -1,3 +1,1 @@
-export const activeQueries = {
-  count: 0
-};
+export * from '../src/values/activeQueries.js';
