@@ -13,7 +13,6 @@ need_files=(
   "adapters"
   "api/index.js"
   "test"
-  "karma.conf.js"
 )
 for f in "${need_files[@]}"; do
   [[ -e "$f" ]] || { echo "Missing $f"; exit 1; }
@@ -70,28 +69,14 @@ else
   echo "NOTE: eslint not configured; skipping"
 fi
 
-echo "== 7) Tests (Karma headless) =="
-if npx --yes karma --version >/dev/null 2>&1; then
-  npx --yes karma start --single-run || true
-else
-  echo "NOTE: karma not installed; trying Grunt"
-fi
-
-echo "== 8) Tests (Grunt fallback) =="
-if npx --yes grunt --version >/dev/null 2>&1; then
-  npx --yes grunt test || true
-else
-  echo "NOTE: grunt not installed; relying on npm test if present"
-fi
-
-echo "== 9) npm test fallback =="
+echo "== 7) Tests (Vitest via npm test) =="
 if npm run | grep -q " test"; then
   npm test
 else
-  echo "NOTE: no npm test script; ensure Karma/Grunt ran above"
+  echo "NOTE: no npm test script configured"
 fi
 
-echo "== 10) Coverage threshold (optional) =="
+echo "== 8) Coverage threshold (optional) =="
 if [ -d coverage ] || [ -f coverage/lcov.info ]; then
   echo "Coverage output present."
 else
